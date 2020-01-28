@@ -11,6 +11,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "-g0 -O3 -Wall -pedantic -Werror -DNDEBUG")
 include(FindPkgConfig)
 pkg_check_modules(SDL2 REQUIRED sdl2 SDL2_ttf SDL2_image)
 pkg_check_modules(CURL REQUIRED libcurl)
+pkg_check_modules(JSON REQUIRED jsoncpp)
 pkg_search_module(MAGICKPP REQUIRED Magick++ GraphicsMagick++)
 
 add_subdirectory(src)

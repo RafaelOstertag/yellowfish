@@ -1,5 +1,6 @@
 #include "yellowfish.hh"
 #include "net/curl.hh"
+#include "net/nasapod.hh"
 #include "screens/clock.hh"
 #include "screens/fill.hh"
 #include "screens/image.hh"
@@ -23,19 +24,26 @@ constexpr int WINDOW_HEIGHT_PX{720};
 
 net::Http picsum{"https://picsum.photos/720"};
 net::Http unsplash{"https://source.unsplash.com/random/720x720"};
+net::NasaPod nasaPod{};
+
 utils::DirectoryLister directoryLister{localImageDir};
 
 screens::Image picsumImage() {
-    std::string contentType;
-    auto data = picsum.get(contentType);
+    auto data = picsum.get();
 
     sdl::MemoryRWOps memoryRWOps{data, data.getLength()};
     return screens::Image{memoryRWOps};
 }
 
 screens::Image unsplashImage() {
-    std::string contentType;
-    auto data = picsum.get(contentType);
+    auto data = picsum.get();
+
+    sdl::MemoryRWOps memoryRWOps{data, data.getLength()};
+    return screens::Image{memoryRWOps};
+}
+
+screens::Image nasaPictureOfTheDay() {
+    auto data = nasaPod.fetch();
 
     sdl::MemoryRWOps memoryRWOps{data, data.getLength()};
     return screens::Image{memoryRWOps};
@@ -66,7 +74,7 @@ void run(bool fullscreen) {
     utils::TimeKeeper timeKeeper;
 
     auto imageSelector =
-        std::bind(std::uniform_int_distribution<unsigned long>{0, 2},
+        std::bind(std::uniform_int_distribution<unsigned long>{0, 3},
                   std::mt19937(std::time(nullptr)));
 
     bool firstIteration{true};
@@ -103,6 +111,13 @@ void run(bool fullscreen) {
 #endif
                 image = randomLocalImage();
                 break;
+            case 3:
+#ifndef NDEBUG
+                std::cerr << "retrieving NASA Picture of the Day\n";
+#endif
+                image = nasaPictureOfTheDay();
+                break;
+
             default:
                 throw std::invalid_argument("Invalid image selection");
             }
@@ -143,14 +158,3 @@ int main(int argc, char** argv) {
 
     sdl::SDL::shutdown();
 }
-
-/* int main() {
-    net::Http http{"https://source.unsplash.com/random/720x720"};
-
-    std::string contentType;
-    auto data{http.get(contentType)};
-    std::cout << contentType << '\n';
-
-    data = http.get(contentType);
-    std::cout << contentType << '\n';
-} */

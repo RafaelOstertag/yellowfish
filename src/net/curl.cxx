@@ -242,6 +242,11 @@ Data Http::get(std::string& contentType) {
     return dataBuffer;
 }
 
+Data Http::get() {
+    std::string wdc;
+    return get(wdc);
+}
+
 std::string Http::getLastTransferContentType() const {
     char* ct = nullptr;
     auto res = curl_easy_getinfo(connection, CURLINFO_CONTENT_TYPE, &ct);

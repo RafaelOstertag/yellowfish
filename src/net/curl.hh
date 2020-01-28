@@ -33,6 +33,8 @@ class Data {
     operator void*() const { return buffer; }
     operator const void*() const { return buffer; }
 
+    const uint8_t* get() const { return buffer; }
+
   private:
     static constexpr size_t initialSize = 32 * 1024;
     uint8_t* buffer;
@@ -54,6 +56,7 @@ class Http {
     Http& operator=(Http&& o);
 
     Data get(std::string& contentType);
+    Data get();
 
   private:
     std::string url;
