@@ -1,0 +1,9 @@
+// clang-format off
+#ifndef __YELLOWFISH_HH
+#define __YELLOWFISH_HH
+
+constexpr const char *clockFont{"@CLOCK_FONT@"};
+constexpr const char *localImageDir{"@LOCAL_IMAGE_DIR@"};
+
+#endif
+// clang-format on
