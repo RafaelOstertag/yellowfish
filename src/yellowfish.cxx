@@ -56,6 +56,11 @@ screens::Image nasaPictureOfTheDay() {
 screens::Image randomLocalImage() {
     auto list = directoryLister.list();
 
+    if (list.empty()) {
+        std::cerr << directoryLister.getPath() << " contains no files\n";
+        return screens::Image();
+    }
+
     auto imageIndex = std::bind(
         std::uniform_int_distribution<unsigned long>{0, list.size() - 1},
         std::mt19937(std::time(nullptr)));
@@ -64,6 +69,42 @@ screens::Image randomLocalImage() {
     auto imageBlob = imageResizer.resize(WINDOW_WIDTH_PX);
     sdl::MemoryRWOps memoryRWOps{imageBlob->data(), imageBlob->length()};
     return screens::Image{memoryRWOps};
+}
+
+screens::Image randomImage() {
+    auto screenSelector =
+        std::bind(std::uniform_int_distribution<unsigned long>{3, 3},
+                  std::mt19937(std::time(nullptr)));
+
+    try {
+        switch (screenSelector()) {
+        case 0:
+#ifndef NDEBUG
+            std::cerr << "retrieving Unsplash image\n";
+#endif
+            return unsplashImage();
+        case 1:
+#ifndef NDEBUG
+            std::cerr << "retrieving Picsum image\n";
+#endif
+            return picsumImage();
+        case 2:
+#ifndef NDEBUG
+            std::cerr << "retrieving random local image\n";
+#endif
+            return randomLocalImage();
+        case 3:
+#ifndef NDEBUG
+            std::cerr << "retrieving NASA Picture of the Day\n";
+#endif
+            return nasaPictureOfTheDay();
+        default:
+            throw std::invalid_argument("Invalid image selection");
+        }
+    } catch (std::exception& e) {
+        std::cerr << e.what() << '\n';
+        return screens::Image();
+    }
 }
 
 void run(bool fullscreen) {
@@ -78,10 +119,6 @@ void run(bool fullscreen) {
                          false};
 
     utils::TimeKeeper timeKeeper;
-
-    auto screenSelector =
-        std::bind(std::uniform_int_distribution<unsigned long>{3, 3},
-                  std::mt19937(std::time(nullptr)));
 
     bool firstIteration{true};
     screens::Image image;
@@ -98,38 +135,11 @@ void run(bool fullscreen) {
         }
 
         if (timeKeeper.hasMinuteElapsed() || firstIteration) {
-            switch (screenSelector()) {
-            case 0:
-#ifndef NDEBUG
-                std::cerr << "retrieving Unsplash image\n";
-#endif
-                image = unsplashImage();
-                break;
-            case 1:
-#ifndef NDEBUG
-                std::cerr << "retrieving Picsum image\n";
-#endif
-                image = picsumImage();
-                break;
-            case 2:
-#ifndef NDEBUG
-                std::cerr << "retrieving random local image\n";
-#endif
-                image = randomLocalImage();
-                break;
-            case 3:
-#ifndef NDEBUG
-                std::cerr << "retrieving NASA Picture of the Day\n";
-#endif
-                image = nasaPictureOfTheDay();
-                break;
-
-            default:
-                throw std::invalid_argument("Invalid image selection");
-            }
+            image = randomImage();
         }
 
-        window.render(image);
+        if (!image.isEmpty())
+            window.render(image);
         window.render(fill);
         window.render(clock);
 

@@ -10,6 +10,8 @@ class DirectoryLister {
     DirectoryLister(const std::string& path);
     std::vector<std::string> list() const;
 
+    std::string getPath() const { return path; }
+
   private:
     std::string path;
 };
