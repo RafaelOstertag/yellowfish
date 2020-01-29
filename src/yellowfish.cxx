@@ -45,7 +45,11 @@ screens::Image unsplashImage() {
 screens::Image nasaPictureOfTheDay() {
     auto data = nasaPod.fetch();
 
-    sdl::MemoryRWOps memoryRWOps{data, data.getLength()};
+    Magick::Blob imageBlob{data, data.getLength()};
+    utils::ImageResizer imageResizer(imageBlob);
+    auto resizedImage = imageResizer.resize(WINDOW_WIDTH_PX);
+
+    sdl::MemoryRWOps memoryRWOps{resizedImage->data(), resizedImage->length()};
     return screens::Image{memoryRWOps};
 }
 
@@ -76,7 +80,7 @@ void run(bool fullscreen) {
     utils::TimeKeeper timeKeeper;
 
     auto screenSelector =
-        std::bind(std::uniform_int_distribution<unsigned long>{0, 3},
+        std::bind(std::uniform_int_distribution<unsigned long>{3, 3},
                   std::mt19937(std::time(nullptr)));
 
     bool firstIteration{true};

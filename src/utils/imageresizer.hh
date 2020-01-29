@@ -9,6 +9,7 @@ namespace utils {
 class ImageResizer {
   public:
     ImageResizer(const std::string& imagePath);
+    ImageResizer(const Magick::Blob& blob);
     ~ImageResizer();
 
     std::shared_ptr<Magick::Blob> resize(size_t x);

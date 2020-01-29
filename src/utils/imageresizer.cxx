@@ -6,6 +6,9 @@ using namespace utils;
 ImageResizer::ImageResizer(const std::string& imagePath)
     : image{std::make_unique<Magick::Image>(imagePath)} {}
 
+ImageResizer::ImageResizer(const Magick::Blob& blob)
+    : image{std::make_unique<Magick::Image>(blob)} {}
+
 ImageResizer::~ImageResizer() {}
 
 std::shared_ptr<Magick::Blob> ImageResizer::resize(size_t x) {
