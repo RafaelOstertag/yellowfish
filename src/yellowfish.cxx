@@ -73,7 +73,7 @@ screens::Image randomLocalImage() {
 
 screens::Image randomImage() {
     auto screenSelector =
-        std::bind(std::uniform_int_distribution<unsigned long>{3, 3},
+        std::bind(std::uniform_int_distribution<unsigned long>{0, 3},
                   std::mt19937(std::time(nullptr)));
 
     try {
