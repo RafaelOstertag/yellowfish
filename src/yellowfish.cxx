@@ -52,9 +52,11 @@ screens::Image nasaPictureOfTheDay() {
 screens::Image randomLocalImage() {
     auto list = directoryLister.list();
 
-    std::random_shuffle(list.begin(), list.end());
+    auto imageIndex = std::bind(
+        std::uniform_int_distribution<unsigned long>{0, list.size() - 1},
+        std::mt19937(std::time(nullptr)));
 
-    utils::ImageResizer imageResizer(list[0]);
+    utils::ImageResizer imageResizer(list[imageIndex()]);
     auto imageBlob = imageResizer.resize(WINDOW_WIDTH_PX);
     sdl::MemoryRWOps memoryRWOps{imageBlob->data(), imageBlob->length()};
     return screens::Image{memoryRWOps};
@@ -73,7 +75,7 @@ void run(bool fullscreen) {
 
     utils::TimeKeeper timeKeeper;
 
-    auto imageSelector =
+    auto screenSelector =
         std::bind(std::uniform_int_distribution<unsigned long>{0, 3},
                   std::mt19937(std::time(nullptr)));
 
@@ -92,7 +94,7 @@ void run(bool fullscreen) {
         }
 
         if (timeKeeper.hasMinuteElapsed() || firstIteration) {
-            switch (imageSelector()) {
+            switch (screenSelector()) {
             case 0:
 #ifndef NDEBUG
                 std::cerr << "retrieving Unsplash image\n";
