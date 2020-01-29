@@ -36,7 +36,7 @@ class Data {
     const uint8_t* get() const { return buffer; }
 
   private:
-    static constexpr size_t initialSize = 32 * 1024;
+    static constexpr size_t initialSize = 128 * 1024;
     uint8_t* buffer;
     size_t size;
     size_t length;
