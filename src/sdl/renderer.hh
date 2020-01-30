@@ -5,7 +5,7 @@
 
 namespace sdl {
 class Renderer {
-  public:
+   public:
     Renderer(SDL_Renderer* renderer = nullptr);
     ~Renderer();
 
@@ -17,11 +17,11 @@ class Renderer {
 
     constexpr operator SDL_Renderer*() const { return sdlRenderer; }
 
-  private:
+   private:
     SDL_Renderer* sdlRenderer;
 
     void destroyRenderer();
 };
-} // namespace sdl
+}  // namespace sdl
 
 #endif

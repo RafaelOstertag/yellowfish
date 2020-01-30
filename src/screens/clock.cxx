@@ -1,4 +1,5 @@
 #include "clock.hh"
+
 #include <ctime>
 #include <iomanip>
 #include <sstream>
@@ -21,12 +22,13 @@ std::string timeAsText(bool withSeconds) {
 
     return ascTime.str();
 }
-} // namespace
+}  // namespace
 
 Clock::Clock(const std::string& fontpath, int size, const sdl::Color& fontColor,
              bool showSeconds)
-    : font{new sdl::Font{fontpath, size}}, color{fontColor}, showSeconds{
-                                                                 showSeconds} {}
+    : font{new sdl::Font{fontpath, size}},
+      color{fontColor},
+      showSeconds{showSeconds} {}
 
 void Clock::render(const sdl::Renderer& renderer) {
     auto timeText = timeAsText(showSeconds);

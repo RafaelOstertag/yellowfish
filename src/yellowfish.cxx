@@ -1,4 +1,13 @@
 #include "yellowfish.hh"
+
+#include <algorithm>
+#include <chrono>
+#include <cstring>
+#include <functional>
+#include <iostream>
+#include <random>
+#include <stdexcept>
+
 #include "net/curl.hh"
 #include "net/nasapod.hh"
 #include "screens/clock.hh"
@@ -10,14 +19,6 @@
 #include "utils/dirlist.hh"
 #include "utils/imageresizer.hh"
 #include "utils/timekeeper.hh"
-
-#include <algorithm>
-#include <chrono>
-#include <cstring>
-#include <functional>
-#include <iostream>
-#include <random>
-#include <stdexcept>
 
 constexpr int WINDOW_WIDTH_PX{720};
 constexpr int WINDOW_HEIGHT_PX{720};
@@ -78,28 +79,28 @@ screens::Image randomImage() {
 
     try {
         switch (screenSelector()) {
-        case 0:
+            case 0:
 #ifndef NDEBUG
-            std::cerr << "retrieving Unsplash image\n";
+                std::cerr << "retrieving Unsplash image\n";
 #endif
-            return unsplashImage();
-        case 1:
+                return unsplashImage();
+            case 1:
 #ifndef NDEBUG
-            std::cerr << "retrieving Picsum image\n";
+                std::cerr << "retrieving Picsum image\n";
 #endif
-            return picsumImage();
-        case 2:
+                return picsumImage();
+            case 2:
 #ifndef NDEBUG
-            std::cerr << "retrieving random local image\n";
+                std::cerr << "retrieving random local image\n";
 #endif
-            return randomLocalImage();
-        case 3:
+                return randomLocalImage();
+            case 3:
 #ifndef NDEBUG
-            std::cerr << "retrieving NASA Picture of the Day\n";
+                std::cerr << "retrieving NASA Picture of the Day\n";
 #endif
-            return nasaPictureOfTheDay();
-        default:
-            throw std::invalid_argument("Invalid image selection");
+                return nasaPictureOfTheDay();
+            default:
+                throw std::invalid_argument("Invalid image selection");
         }
     } catch (std::exception& e) {
         std::cerr << e.what() << '\n';
@@ -128,8 +129,8 @@ void run(bool fullscreen) {
                 return;
             } else if (event.type == SDL_KEYDOWN) {
                 switch (event.key.keysym.sym) {
-                case SDLK_q:
-                    return;
+                    case SDLK_q:
+                        return;
                 }
             }
         }
@@ -138,8 +139,7 @@ void run(bool fullscreen) {
             image = randomImage();
         }
 
-        if (!image.isEmpty())
-            window.render(image);
+        if (!image.isEmpty()) window.render(image);
         window.render(fill);
         window.render(clock);
 

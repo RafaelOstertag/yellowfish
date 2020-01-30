@@ -5,9 +5,9 @@
 
 namespace sdl {
 class Renderable {
-  public:
+   public:
     virtual void render(const Renderer& renderer) = 0;
 };
-} // namespace sdl
+}  // namespace sdl
 
 #endif

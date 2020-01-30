@@ -2,21 +2,22 @@
 #define __IMAGERESIZER_HH
 
 #include <Magick++.h>
+
 #include <memory>
 #include <string>
 
 namespace utils {
 class ImageResizer {
-  public:
+   public:
     ImageResizer(const std::string& imagePath);
     ImageResizer(const Magick::Blob& blob);
     ~ImageResizer();
 
     std::shared_ptr<Magick::Blob> resize(size_t x);
 
-  private:
+   private:
     std::shared_ptr<Magick::Image> image;
 };
-} // namespace utils
+}  // namespace utils
 
 #endif

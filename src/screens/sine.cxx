@@ -5,8 +5,10 @@
 using namespace screens;
 
 Sine::Sine(Sint32 x, Sint32 y, Sint32 width, Sint32 height, bool clearScreen)
-    : rect{x, y, width, height}, calls{0}, xOffset{0}, clearScreen{
-                                                           clearScreen} {}
+    : rect{x, y, width, height},
+      calls{0},
+      xOffset{0},
+      clearScreen{clearScreen} {}
 
 void Sine::render(const sdl::Renderer& renderer) {
     int baseLine = rect.y + rect.h / 2;

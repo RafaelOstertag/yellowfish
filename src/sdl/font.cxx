@@ -1,6 +1,7 @@
 #include "font.hh"
 
 #include <SDL.h>
+
 #include <stdexcept>
 
 using namespace sdl;

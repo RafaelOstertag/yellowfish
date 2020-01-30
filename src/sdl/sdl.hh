@@ -3,15 +3,15 @@
 
 namespace sdl {
 class SDL {
-  public:
+   public:
     static void initialize();
     static void shutdown();
 
     static bool isInitialized() { return initialized; }
 
-  private:
+   private:
     static bool initialized;
 };
-} // namespace sdl
+}  // namespace sdl
 
 #endif

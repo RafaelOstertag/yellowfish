@@ -1,4 +1,5 @@
 #include "window.hh"
+
 #include <iostream>
 #include <stdexcept>
 
@@ -34,8 +35,7 @@ Window::Window(Window&& o) : sdlWindow{o.sdlWindow}, bgColor{o.bgColor} {
 }
 
 Window::~Window() {
-    if (sdlWindow)
-        SDL_DestroyWindow(sdlWindow);
+    if (sdlWindow) SDL_DestroyWindow(sdlWindow);
 }
 
 void Window::clear() {

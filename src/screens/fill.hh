@@ -5,7 +5,7 @@
 
 namespace screens {
 class Fill : public sdl::Renderable {
-  public:
+   public:
     Fill(const sdl::Color& fillColor) : fillColor{fillColor} {}
     virtual ~Fill() {}
 
@@ -19,9 +19,9 @@ class Fill : public sdl::Renderable {
         SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
     }
 
-  private:
+   private:
     sdl::Color fillColor;
 };
-} // namespace screens
+}  // namespace screens
 
 #endif

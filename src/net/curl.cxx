@@ -30,7 +30,8 @@ void Curl::initialize() {
 
 Data::Data()
     : buffer{static_cast<uint8_t*>(std::malloc(initialSize))},
-      size{initialSize}, length{0} {
+      size{initialSize},
+      length{0} {
     if (buffer == nullptr) {
         throw std::runtime_error("Out of memory while initializing");
     }
@@ -39,7 +40,8 @@ Data::Data()
 Data::~Data() { free(); }
 
 Data::Data(const Data& o)
-    : buffer{static_cast<uint8_t*>(std::malloc(o.size))}, size{o.size},
+    : buffer{static_cast<uint8_t*>(std::malloc(o.size))},
+      size{o.size},
       length{o.length} {
     if (buffer == nullptr) {
         throw std::runtime_error("Out of memory while copying");
@@ -105,8 +107,7 @@ void Data::reset() {
 
 void Data::append(uint8_t* src, size_t sz) {
     auto newLength = length + sz;
-    if (newLength > size)
-        grow();
+    if (newLength > size) grow();
 
     std::memcpy(buffer + length, src, sz);
     length = newLength;
@@ -137,14 +138,13 @@ void Data::free() {
 
 namespace {
 int curl_writer(char* data, size_t size, size_t nmemb, Data* buffer) {
-    if (buffer == NULL || nmemb == 0)
-        return 0;
+    if (buffer == NULL || nmemb == 0) return 0;
 
     buffer->append(reinterpret_cast<uint8_t*>(data), size * nmemb);
 
     return size * nmemb;
 }
-} // namespace
+}  // namespace
 
 Http::Http(const std::string& url) : url{url}, connection{nullptr} {
     Curl::initialize();

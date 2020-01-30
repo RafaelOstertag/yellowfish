@@ -2,19 +2,20 @@
 #define __CURL_HH
 
 #include <curl/curl.h>
+
 #include <string>
 
 namespace net {
 class Curl {
-  public:
+   public:
     static void initialize();
 
-  private:
+   private:
     static bool initialized;
 };
 
 class Data {
-  public:
+   public:
     Data();
     ~Data();
 
@@ -35,7 +36,7 @@ class Data {
 
     const uint8_t* get() const { return buffer; }
 
-  private:
+   private:
     static constexpr size_t initialSize = 128 * 1024;
     uint8_t* buffer;
     size_t size;
@@ -46,7 +47,7 @@ class Data {
 };
 
 class Http {
-  public:
+   public:
     Http(const std::string& url);
     ~Http();
 
@@ -58,13 +59,13 @@ class Http {
     Data get(std::string& contentType);
     Data get();
 
-  private:
+   private:
     std::string url;
     CURL* connection;
     char errorBuffer[CURL_ERROR_SIZE];
 
     std::string getLastTransferContentType() const;
 };
-} // namespace net
+}  // namespace net
 
 #endif

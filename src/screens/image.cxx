@@ -1,5 +1,7 @@
 #include "image.hh"
+
 #include <SDL_image.h>
+
 #include <sstream>
 #include <stdexcept>
 

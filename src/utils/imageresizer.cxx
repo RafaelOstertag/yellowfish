@@ -1,4 +1,5 @@
 #include "imageresizer.hh"
+
 #include "../sdl/memoryrwops.hh"
 
 using namespace utils;

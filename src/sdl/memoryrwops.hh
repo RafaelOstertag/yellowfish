@@ -6,7 +6,7 @@
 namespace sdl {
 
 class MemoryRWOps {
-  public:
+   public:
     MemoryRWOps(const void* ptr, size_t size);
     ~MemoryRWOps();
 
@@ -18,12 +18,12 @@ class MemoryRWOps {
 
     constexpr SDL_RWops* getRWOps() const { return memRWOps; }
 
-  private:
+   private:
     SDL_RWops* memRWOps;
 
     void destroyRWOps();
 };
 
-} // namespace sdl
+}  // namespace sdl
 
 #endif

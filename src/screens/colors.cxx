@@ -36,12 +36,12 @@ Uint8 Colors::nextRed(Uint8 red) {
     }
 
     switch (red) {
-    case 0x0:
-        redUp = true;
-        break;
-    case 0xff:
-        redUp = false;
-        break;
+        case 0x0:
+            redUp = true;
+            break;
+        case 0xff:
+            redUp = false;
+            break;
     }
     return red;
 }
@@ -54,12 +54,12 @@ Uint8 Colors::nextGreen(Uint8 green) {
     }
 
     switch (green) {
-    case 0x0:
-        greenUp = true;
-        break;
-    case 0xff:
-        greenUp = false;
-        break;
+        case 0x0:
+            greenUp = true;
+            break;
+        case 0xff:
+            greenUp = false;
+            break;
     }
     return green;
 }
@@ -72,12 +72,12 @@ Uint8 Colors::nextBlue(Uint8 blue) {
     }
 
     switch (blue) {
-    case 0x0:
-        blueUp = true;
-        break;
-    case 0xff:
-        blueUp = false;
-        break;
+        case 0x0:
+            blueUp = true;
+            break;
+        case 0xff:
+            blueUp = false;
+            break;
     }
     return blue;
 }

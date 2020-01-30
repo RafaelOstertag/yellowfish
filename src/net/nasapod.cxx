@@ -1,6 +1,7 @@
 #include "nasapod.hh"
 
 #include <json/reader.h>
+
 #include <sstream>
 
 #ifndef NDEBUG
@@ -18,11 +19,12 @@ std::stringstream toStringStream(const net::Data& data) {
     }
     return stringStream;
 }
-} // namespace
+}  // namespace
 
 NasaPod::NasaPod(const std::string& apiKey)
     : metaDataFetcher{"https://api.nasa.gov/planetary/apod?api_key=" + apiKey},
-      pictureOfTheDay{}, lastRetrieved{} {}
+      pictureOfTheDay{},
+      lastRetrieved{} {}
 
 net::Data NasaPod::fetch() {
     auto now{std::chrono::system_clock::now()};

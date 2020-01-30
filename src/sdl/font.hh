@@ -2,13 +2,14 @@
 #define __FONT_HH
 
 #include <SDL_ttf.h>
+
 #include <memory>
 #include <string>
 
 namespace sdl {
 
 class Font {
-  public:
+   public:
     Font(const std::string& filepath, int size);
     ~Font();
     Font(const Font& o);
@@ -19,11 +20,11 @@ class Font {
 
     operator TTF_Font*() const { return ttfFont.get(); }
 
-  private:
+   private:
     std::shared_ptr<TTF_Font> ttfFont;
 };
 
 using FontPtr = std::shared_ptr<Font>;
-} // namespace sdl
+}  // namespace sdl
 
 #endif

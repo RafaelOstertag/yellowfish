@@ -1,16 +1,17 @@
 #include "dirlist.hh"
 
+#include <dirent.h>
+#include <sys/types.h>
+
 #include <cerrno>
 #include <cstring>
-#include <dirent.h>
 #include <stdexcept>
-#include <sys/types.h>
 
 using namespace utils;
 
 namespace {
 class DirectoryHandle {
-  public:
+   public:
     DirectoryHandle(const char* path) : dir{nullptr} {
         dir = opendir(path);
         if (dir == nullptr) {
@@ -31,10 +32,10 @@ class DirectoryHandle {
 
     DIR* operator*() { return dir; }
 
-  private:
+   private:
     DIR* dir;
 };
-} // namespace
+}  // namespace
 
 DirectoryLister::DirectoryLister(const std::string& path) : path{path} {}
 

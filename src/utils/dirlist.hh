@@ -6,15 +6,15 @@
 
 namespace utils {
 class DirectoryLister {
-  public:
+   public:
     DirectoryLister(const std::string& path);
     std::vector<std::string> list() const;
 
     std::string getPath() const { return path; }
 
-  private:
+   private:
     std::string path;
 };
-} // namespace utils
+}  // namespace utils
 
 #endif

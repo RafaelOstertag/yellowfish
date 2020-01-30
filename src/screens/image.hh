@@ -6,7 +6,7 @@
 
 namespace screens {
 class Image : public sdl::Renderable {
-  public:
+   public:
     Image();
     Image(const sdl::MemoryRWOps& memory);
 
@@ -24,12 +24,12 @@ class Image : public sdl::Renderable {
         return surface == nullptr && texture == nullptr;
     }
 
-  private:
+   private:
     SDL_Surface* surface;
     SDL_Texture* texture;
 
     void cleanup();
 };
-} // namespace screens
+}  // namespace screens
 
 #endif
