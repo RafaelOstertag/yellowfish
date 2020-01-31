@@ -174,6 +174,15 @@ void parseCommandLine(int argc, char** argv, Config& config) {
             selectedImageCreators.push_back(picsumImage);
             continue;
         }
+
+        std::cerr << argv[0] << " [full] [local] [nasa] [unsplash] [picsum]\n";
+        std::cerr << "\nfull\t\tfull screen\n"
+                  << "local\t\tlocal random image from\n"
+                  << "\t\t" << localImageDir << '\n'
+                  << "nasa\t\tNASA picture of the day\n"
+                  << "unsplash\tunsplash image\n"
+                  << "picsum\t\tpicsum image\n";
+        exit(1);
     }
 
     if (!selectedImageCreators.empty()) {
