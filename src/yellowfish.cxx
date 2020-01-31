@@ -134,7 +134,7 @@ void run(const Config& config) {
         window.update();
 
         firstIteration = false;
-        SDL_Delay(10);
+        SDL_Delay(300);
     }
 }
 
