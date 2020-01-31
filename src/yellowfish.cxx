@@ -20,6 +20,15 @@
 #include "utils/imageresizer.hh"
 #include "utils/timekeeper.hh"
 
+namespace {
+
+typedef screens::Image (*imageCreator_t)(void);
+
+struct Config {
+    bool fullScreen;
+    std::vector<imageCreator_t> imageCreators;
+};
+
 constexpr int WINDOW_WIDTH_PX{720};
 constexpr int WINDOW_HEIGHT_PX{720};
 
@@ -72,45 +81,24 @@ screens::Image randomLocalImage() {
     return screens::Image{memoryRWOps};
 }
 
-screens::Image randomImage() {
-    auto screenSelector =
-        std::bind(std::uniform_int_distribution<unsigned long>{0, 3},
-                  std::mt19937(std::time(nullptr)));
+screens::Image randomImage(const std::vector<imageCreator_t>& imageCreators) {
+    static auto screenSelector = std::bind(
+        std::uniform_int_distribution<unsigned long>{0,
+                                                     imageCreators.size() - 1},
+        std::mt19937(std::time(nullptr)));
 
     try {
-        switch (screenSelector()) {
-            case 0:
-#ifndef NDEBUG
-                std::cerr << "retrieving Unsplash image\n";
-#endif
-                return unsplashImage();
-            case 1:
-#ifndef NDEBUG
-                std::cerr << "retrieving Picsum image\n";
-#endif
-                return picsumImage();
-            case 2:
-#ifndef NDEBUG
-                std::cerr << "retrieving random local image\n";
-#endif
-                return randomLocalImage();
-            case 3:
-#ifndef NDEBUG
-                std::cerr << "retrieving NASA Picture of the Day\n";
-#endif
-                return nasaPictureOfTheDay();
-            default:
-                throw std::invalid_argument("Invalid image selection");
-        }
+        imageCreator_t imageCreator{imageCreators[screenSelector()]};
+        return imageCreator();
     } catch (std::exception& e) {
         std::cerr << e.what() << '\n';
         return screens::Image();
     }
 }
 
-void run(bool fullscreen) {
+void run(const Config& config) {
     sdl::Window window{"YellowFish", WINDOW_WIDTH_PX, WINDOW_HEIGHT_PX,
-                       sdl::BLACK, fullscreen};
+                       sdl::BLACK, config.fullScreen};
 
     SDL_Event event;
 
@@ -136,7 +124,7 @@ void run(bool fullscreen) {
         }
 
         if (timeKeeper.hasMinuteElapsed() || firstIteration) {
-            image = randomImage();
+            image = randomImage(config.imageCreators);
         }
 
         if (!image.isEmpty()) window.render(image);
@@ -150,6 +138,51 @@ void run(bool fullscreen) {
     }
 }
 
+void parseCommandLine(int argc, char** argv, Config& config) {
+    config.fullScreen = false;
+    config.imageCreators = std::vector<imageCreator_t>{
+        randomLocalImage, nasaPictureOfTheDay, unsplashImage, picsumImage};
+
+    if (argc == 1) {
+        return;
+    }
+
+    std::vector<imageCreator_t> selectedImageCreators;
+    for (int i = 1; i < argc; i++) {
+        char* argument{argv[i]};
+        if (std::strcmp(argument, "full") == 0) {
+            config.fullScreen = true;
+            continue;
+        }
+
+        if (std::strcmp(argument, "local") == 0) {
+            selectedImageCreators.push_back(randomLocalImage);
+            continue;
+        }
+
+        if (std::strcmp(argument, "nasa") == 0) {
+            selectedImageCreators.push_back(nasaPictureOfTheDay);
+            continue;
+        }
+
+        if (std::strcmp(argument, "unsplash") == 0) {
+            selectedImageCreators.push_back(unsplashImage);
+            continue;
+        }
+
+        if (std::strcmp(argument, "picsum") == 0) {
+            selectedImageCreators.push_back(picsumImage);
+            continue;
+        }
+    }
+
+    if (!selectedImageCreators.empty()) {
+        config.imageCreators = selectedImageCreators;
+    }
+}
+
+}  // namespace
+
 int main(int argc, char** argv) {
     Magick::InitializeMagick(nullptr);
     sdl::SDL::initialize();
@@ -159,13 +192,11 @@ int main(int argc, char** argv) {
 
     SDL_ShowCursor(SDL_DISABLE);
 
-    bool fullscreen = false;
-    if (argc == 2 && std::strcmp(argv[1], "full") == 0) {
-        fullscreen = true;
-    }
+    Config config;
+    parseCommandLine(argc, argv, config);
 
     try {
-        run(fullscreen);
+        run(config);
         return 0;
     } catch (std::exception& e) {
         std::cerr << "Ooops! " << e.what() << "\n";
