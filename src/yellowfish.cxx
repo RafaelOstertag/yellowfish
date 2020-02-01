@@ -41,6 +41,9 @@ std::unique_ptr<net::NasaPod> nasaPod;
 utils::DirectoryLister directoryLister{localImageDir};
 
 screens::Image picsumImage(const Config& config) {
+#ifndef NDEBUG
+    std::cerr << "Loading Picsum image\n";
+#endif
     auto data = picsum->get();
 
     sdl::MemoryRWOps memoryRWOps{data, data.getLength()};
@@ -48,6 +51,9 @@ screens::Image picsumImage(const Config& config) {
 }
 
 screens::Image unsplashImage(const Config& config) {
+#ifndef NDEBUG
+    std::cerr << "Loading Unsplash image\n";
+#endif
     auto data = picsum->get();
 
     sdl::MemoryRWOps memoryRWOps{data, data.getLength()};
@@ -55,6 +61,9 @@ screens::Image unsplashImage(const Config& config) {
 }
 
 screens::Image nasaPictureOfTheDay(const Config& config) {
+#ifndef NDEBUG
+    std::cerr << "Loading NASA Picture Of The Day\n";
+#endif
     auto data = nasaPod->fetch();
 
     Magick::Blob imageBlob{data, data.getLength()};
