@@ -22,14 +22,24 @@ std::shared_ptr<Magick::Blob> ImageResizer::resize(size_t x, size_t y) {
     auto width = workingImage.columns();
     auto height = workingImage.rows();
 
-    if (width > height) {
-        double scaleFactor = static_cast<double>(y) / height;
-        workingImage.zoom(
-            Magick::Geometry{static_cast<size_t>(width * scaleFactor), y});
-    } else {
+    if (x == y) {
+        if (width > height) {
+            double scaleFactor = static_cast<double>(y) / height;
+            workingImage.zoom(
+                Magick::Geometry{static_cast<size_t>(width * scaleFactor), x});
+        } else {
+            double scaleFactor = static_cast<double>(x) / width;
+            workingImage.zoom(
+                Magick::Geometry{x, static_cast<size_t>(height * scaleFactor)});
+        }
+    } else if (x > y) {
         double scaleFactor = static_cast<double>(x) / width;
         workingImage.zoom(
             Magick::Geometry{x, static_cast<size_t>(height * scaleFactor)});
+    } else {
+        double scaleFactor = static_cast<double>(y) / height;
+        workingImage.zoom(
+            Magick::Geometry{static_cast<size_t>(width * scaleFactor), y});
     }
     workingImage.crop(Magick::Geometry{x, y});
 
