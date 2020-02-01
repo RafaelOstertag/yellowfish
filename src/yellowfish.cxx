@@ -6,6 +6,7 @@
 #include <functional>
 #include <iostream>
 #include <random>
+#include <sstream>
 #include <stdexcept>
 
 #include "net/curl.hh"
@@ -22,48 +23,49 @@
 
 namespace {
 
-typedef screens::Image (*imageCreator_t)(void);
+struct Config;
+
+typedef screens::Image (*imageCreator_t)(const Config& config);
 
 struct Config {
     bool fullScreen;
+    int width;
+    int height;
     std::vector<imageCreator_t> imageCreators;
 };
 
-constexpr int WINDOW_WIDTH_PX{720};
-constexpr int WINDOW_HEIGHT_PX{720};
-
-net::Http picsum{"https://picsum.photos/720"};
-net::Http unsplash{"https://source.unsplash.com/random/720x720"};
-net::NasaPod nasaPod{};
+std::unique_ptr<net::Http> picsum;
+std::unique_ptr<net::Http> unsplash;
+std::unique_ptr<net::NasaPod> nasaPod;
 
 utils::DirectoryLister directoryLister{localImageDir};
 
-screens::Image picsumImage() {
-    auto data = picsum.get();
+screens::Image picsumImage(const Config& config) {
+    auto data = picsum->get();
 
     sdl::MemoryRWOps memoryRWOps{data, data.getLength()};
     return screens::Image{memoryRWOps};
 }
 
-screens::Image unsplashImage() {
-    auto data = picsum.get();
+screens::Image unsplashImage(const Config& config) {
+    auto data = picsum->get();
 
     sdl::MemoryRWOps memoryRWOps{data, data.getLength()};
     return screens::Image{memoryRWOps};
 }
 
-screens::Image nasaPictureOfTheDay() {
-    auto data = nasaPod.fetch();
+screens::Image nasaPictureOfTheDay(const Config& config) {
+    auto data = nasaPod->fetch();
 
     Magick::Blob imageBlob{data, data.getLength()};
     utils::ImageResizer imageResizer(imageBlob);
-    auto resizedImage = imageResizer.resize(WINDOW_WIDTH_PX);
+    auto resizedImage = imageResizer.resize(config.width, config.height);
 
     sdl::MemoryRWOps memoryRWOps{resizedImage->data(), resizedImage->length()};
     return screens::Image{memoryRWOps};
 }
 
-screens::Image randomLocalImage() {
+screens::Image randomLocalImage(const Config& config) {
     auto list = directoryLister.list();
 
     if (list.empty()) {
@@ -75,13 +77,18 @@ screens::Image randomLocalImage() {
         std::uniform_int_distribution<unsigned long>{0, list.size() - 1},
         std::mt19937(std::time(nullptr)));
 
-    utils::ImageResizer imageResizer(list[imageIndex()]);
-    auto imageBlob = imageResizer.resize(WINDOW_WIDTH_PX);
+    std::string localImageFile{list[imageIndex()]};
+#ifndef NDEBUG
+    std::cerr << "Loading local image " << localImageFile << '\n';
+#endif
+    utils::ImageResizer imageResizer(localImageFile);
+    auto imageBlob = imageResizer.resize(config.width, config.height);
     sdl::MemoryRWOps memoryRWOps{imageBlob->data(), imageBlob->length()};
     return screens::Image{memoryRWOps};
 }
 
-screens::Image randomImage(const std::vector<imageCreator_t>& imageCreators) {
+screens::Image randomImage(const std::vector<imageCreator_t>& imageCreators,
+                           const Config& config) {
     static auto screenSelector = std::bind(
         std::uniform_int_distribution<unsigned long>{0,
                                                      imageCreators.size() - 1},
@@ -89,7 +96,7 @@ screens::Image randomImage(const std::vector<imageCreator_t>& imageCreators) {
 
     try {
         imageCreator_t imageCreator{imageCreators[screenSelector()]};
-        return imageCreator();
+        return imageCreator(config);
     } catch (std::exception& e) {
         std::cerr << e.what() << '\n';
         return screens::Image();
@@ -97,8 +104,8 @@ screens::Image randomImage(const std::vector<imageCreator_t>& imageCreators) {
 }
 
 void run(const Config& config) {
-    sdl::Window window{"YellowFish", WINDOW_WIDTH_PX, WINDOW_HEIGHT_PX,
-                       sdl::BLACK, config.fullScreen};
+    sdl::Window window{"YellowFish", config.width, config.height, sdl::BLACK,
+                       config.fullScreen};
 
     SDL_Event event;
 
@@ -124,7 +131,7 @@ void run(const Config& config) {
         }
 
         if (timeKeeper.hasMinuteElapsed() || firstIteration) {
-            image = randomImage(config.imageCreators);
+            image = randomImage(config.imageCreators, config);
         }
 
         if (!image.isEmpty()) window.render(image);
@@ -190,6 +197,35 @@ void parseCommandLine(int argc, char** argv, Config& config) {
     }
 }
 
+void configureWindowDimensions(Config& config) {
+    if (config.fullScreen) {
+        config.width = sdl::SDL::displayWidth();
+        config.height = sdl::SDL::displayHeight();
+        return;
+    }
+
+    config.width = 640;
+    config.height = 480;
+}
+
+void setupImageRetrievers(const Config& config) {
+    std::stringstream unsplashUrl;
+    unsplashUrl << "https://source.unsplash.com/random/" << config.width << 'x'
+                << config.height;
+    unsplash = std::make_unique<net::Http>(unsplashUrl.str());
+
+    std::stringstream picsumUrl;
+    picsumUrl << "https://picsum.photos/";
+    if (config.height == config.width) {
+        picsumUrl << config.width;
+    } else {
+        picsumUrl << config.width << '/' << config.height;
+    }
+    picsum = std::make_unique<net::Http>(picsumUrl.str());
+
+    nasaPod = std::make_unique<net::NasaPod>();
+}
+
 }  // namespace
 
 int main(int argc, char** argv) {
@@ -203,6 +239,13 @@ int main(int argc, char** argv) {
 
     Config config;
     parseCommandLine(argc, argv, config);
+    configureWindowDimensions(config);
+    setupImageRetrievers(config);
+
+    std::cout << "Window dimension " << config.width << 'x' << config.height
+              << '\n';
+    std::cout << "Fullscreen mode " << (config.fullScreen ? "on" : "off")
+              << '\n';
 
     try {
         run(config);

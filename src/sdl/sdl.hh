@@ -9,6 +9,9 @@ class SDL {
 
     static bool isInitialized() { return initialized; }
 
+    static int displayWidth();
+    static int displayHeight();
+
    private:
     static bool initialized;
 };

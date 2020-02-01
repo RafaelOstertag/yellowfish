@@ -5,8 +5,21 @@
 #include <SDL_ttf.h>
 
 #include <iostream>
+#include <sstream>
 
 using namespace sdl;
+
+bool SDL::initialized = false;
+
+namespace {
+void getDisplayBounds(int displayIndex, SDL_Rect* r) {
+    if (SDL_GetDisplayBounds(displayIndex, r) != 0) {
+        std::stringstream errorMsg;
+        errorMsg << "Unable to get display bounds: " << SDL_GetError();
+        throw std::runtime_error(errorMsg.str());
+    }
+}
+}  // namespace
 
 void SDL::initialize() {
     if (initialized) {
@@ -59,4 +72,22 @@ void SDL::shutdown() {
     initialized = false;
 }
 
-bool SDL::initialized = false;
+int SDL::displayWidth() {
+    if (!initialized) {
+        throw std::runtime_error("SDL not initialized");
+    }
+
+    SDL_Rect r;
+    getDisplayBounds(0, &r);
+    return r.w;
+}
+
+int SDL::displayHeight() {
+    if (!initialized) {
+        throw std::runtime_error("SDL not initialized");
+    }
+
+    SDL_Rect r;
+    getDisplayBounds(0, &r);
+    return r.h;
+}
