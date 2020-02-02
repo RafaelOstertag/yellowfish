@@ -293,8 +293,8 @@ void setupImageRetrievers(const Config& config) {
     picsum = std::make_unique<net::Http>(picsumUrl.str());
 
     std::stringstream imageServerUrl;
-    imageServerUrl << "http://colossus.kruemel.home:40005/images/"
-                   << config.width << '/' << config.height;
+    imageServerUrl << "http://images.kruemel.home:40005/images/" << config.width
+                   << '/' << config.height;
     if (config.hiresOnly) {
         imageServerUrl << "?size=large";
     }
