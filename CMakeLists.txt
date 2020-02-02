@@ -19,5 +19,7 @@ add_subdirectory(src)
 find_file(CLOCK_FONT DejaVuSerif-Bold.ttf /usr/share/fonts/dejavu /usr/share/fonts/truetype/dejavu DOC "Clock font file")
 set(LOCAL_IMAGE_DIR /var/lib/yellowfish/images CACHE FILEPATH "Compile time path to image directory")
 
+install(TARGETS yellowfish DESTINATION bin)
+
 configure_file(yellowfish.hh.in yellowfish.hh)
 
