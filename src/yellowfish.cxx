@@ -31,6 +31,7 @@ struct Config {
     int width;
     int height;
     std::vector<imageRetriever_t> imageRetrievers;
+    screens::Clock::Alignment alignment;
     bool fullScreen;
     bool hiresOnly;
 };
@@ -133,7 +134,7 @@ void run(const Config& config) {
     screens::Fill fill{sdl::Color{0x0, 0x0, 0x0, 0x80}};
 
     screens::Clock clock{clockFont, 200, sdl::Color{0xff, 0xff, 0xff, 0x90},
-                         false};
+                         config.alignment};
 
     utils::TimeKeeper timeKeeper;
 
@@ -169,6 +170,7 @@ void run(const Config& config) {
 void parseCommandLine(int argc, char** argv, Config& config) {
     config.fullScreen = false;
     config.hiresOnly = false;
+    config.alignment = screens::Clock::CENTER;
     config.imageRetrievers = std::vector<imageRetriever_t>{
         imageServerImage, nasaPictureOfTheDay, unsplashImage, picsumImage};
 
@@ -186,6 +188,31 @@ void parseCommandLine(int argc, char** argv, Config& config) {
 
         if (std::strcmp(argument, "hiresonly") == 0) {
             config.hiresOnly = true;
+            continue;
+        }
+
+        if (std::strcmp(argument, "center") == 0) {
+            config.alignment = screens::Clock::CENTER;
+            continue;
+        }
+
+        if (std::strcmp(argument, "tl") == 0) {
+            config.alignment = screens::Clock::TOP_LEFT;
+            continue;
+        }
+
+        if (std::strcmp(argument, "tr") == 0) {
+            config.alignment = screens::Clock::TOP_RIGHT;
+            continue;
+        }
+
+        if (std::strcmp(argument, "bl") == 0) {
+            config.alignment = screens::Clock::BOTTOM_LEFT;
+            continue;
+        }
+
+        if (std::strcmp(argument, "br") == 0) {
+            config.alignment = screens::Clock::BOTTOM_RIGHT;
             continue;
         }
 
@@ -216,7 +243,7 @@ void parseCommandLine(int argc, char** argv, Config& config) {
 
         std::cerr << argv[0]
                   << " [full] [hiresonly] [imageserver] [nasa] [unsplash] "
-                     "[picsum] [local]\n";
+                     "[picsum] [local]\n\t[center|tl|tr|bl|br]\n";
         std::cerr
             << "\nfull\t\tfull screen\n"
             << "hiresonly\tonly high resolution images from image server\n"
@@ -225,7 +252,12 @@ void parseCommandLine(int argc, char** argv, Config& config) {
             << "unsplash\tunsplash image\n"
             << "picsum\t\tpicsum image\n"
             << "local\t\tlocal random image from\n"
-            << "\t\t" << localImageDir << '\n';
+            << "\t\t" << localImageDir << '\n'
+            << "center\t\tcenter align clock\n"
+            << "tl\t\talign clock top left\n"
+            << "tr\t\talign clock top right\n"
+            << "bl\t\talign clock bottom left\n"
+            << "br\t\talign clock bottom right\n";
         exit(1);
     }
 
@@ -241,8 +273,8 @@ void configureWindowDimensions(Config& config) {
         return;
     }
 
-    config.width = 640;
-    config.height = 480;
+    config.width = 1280;
+    config.height = 768;
 }
 
 void setupImageRetrievers(const Config& config) {

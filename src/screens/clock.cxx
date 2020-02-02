@@ -22,27 +22,105 @@ std::string timeAsText(bool withSeconds) {
 
     return ascTime.str();
 }
-}  // namespace
 
-Clock::Clock(const std::string& fontpath, int size, const sdl::Color& fontColor,
-             bool showSeconds)
-    : font{new sdl::Font{fontpath, size}},
-      color{fontColor},
-      showSeconds{showSeconds} {}
-
-void Clock::render(const sdl::Renderer& renderer) {
-    auto timeText = timeAsText(showSeconds);
-    auto texture = textToTexture(timeText, renderer);
-
+void alignCenter(const sdl::Renderer& renderer, SDL_Texture* texture,
+                 SDL_Rect* targetRect) {
     int textureWidth, textureHeight;
     SDL_QueryTexture(texture, NULL, NULL, &textureWidth, &textureHeight);
 
     SDL_Rect viewPort;
     SDL_RenderGetViewport(renderer, &viewPort);
 
-    SDL_Rect targetRect{(viewPort.w / 2) - (textureWidth / 2),
-                        (viewPort.h / 2) - (textureHeight / 2), textureWidth,
-                        textureHeight};
+    targetRect->x = (viewPort.w / 2) - (textureWidth / 2);
+    targetRect->y = (viewPort.h / 2) - (textureHeight / 2);
+    targetRect->w = textureWidth;
+    targetRect->h = textureHeight;
+}
+
+void alignTopLeft(const sdl::Renderer& renderer, SDL_Texture* texture,
+                  SDL_Rect* targetRect) {
+    int textureWidth, textureHeight;
+    SDL_QueryTexture(texture, NULL, NULL, &textureWidth, &textureHeight);
+
+    targetRect->x = 0;
+    targetRect->y = 0;
+    targetRect->w = textureWidth;
+    targetRect->h = textureHeight;
+}
+
+void alignTopRight(const sdl::Renderer& renderer, SDL_Texture* texture,
+                   SDL_Rect* targetRect) {
+    int textureWidth, textureHeight;
+    SDL_QueryTexture(texture, NULL, NULL, &textureWidth, &textureHeight);
+
+    SDL_Rect viewPort;
+    SDL_RenderGetViewport(renderer, &viewPort);
+
+    targetRect->x = viewPort.w - textureWidth;
+    targetRect->y = 0;
+    targetRect->w = textureWidth;
+    targetRect->h = textureHeight;
+}
+
+void alignBottomLeft(const sdl::Renderer& renderer, SDL_Texture* texture,
+                     SDL_Rect* targetRect) {
+    int textureWidth, textureHeight;
+    SDL_QueryTexture(texture, NULL, NULL, &textureWidth, &textureHeight);
+
+    SDL_Rect viewPort;
+    SDL_RenderGetViewport(renderer, &viewPort);
+
+    targetRect->x = 0;
+    targetRect->y = viewPort.h - textureHeight;
+    targetRect->w = textureWidth;
+    targetRect->h = textureHeight;
+}
+
+void alignBottomRight(const sdl::Renderer& renderer, SDL_Texture* texture,
+                      SDL_Rect* targetRect) {
+    int textureWidth, textureHeight;
+    SDL_QueryTexture(texture, NULL, NULL, &textureWidth, &textureHeight);
+
+    SDL_Rect viewPort;
+    SDL_RenderGetViewport(renderer, &viewPort);
+
+    targetRect->x = viewPort.w - textureWidth;
+    targetRect->y = viewPort.h - textureHeight;
+    targetRect->w = textureWidth;
+    targetRect->h = textureHeight;
+}
+
+}  // namespace
+
+Clock::Clock(const std::string& fontpath, int size, const sdl::Color& fontColor,
+             Alignment alignment, bool showSeconds)
+    : font{new sdl::Font{fontpath, size}},
+      color{fontColor},
+      alignment{alignment},
+      showSeconds{showSeconds} {}
+
+void Clock::render(const sdl::Renderer& renderer) {
+    auto timeText = timeAsText(showSeconds);
+    auto texture = textToTexture(timeText, renderer);
+
+    SDL_Rect targetRect;
+    switch (alignment) {
+        case CENTER:
+            alignCenter(renderer, texture, &targetRect);
+            break;
+        case TOP_RIGHT:
+            alignTopRight(renderer, texture, &targetRect);
+            break;
+        case TOP_LEFT:
+            alignTopLeft(renderer, texture, &targetRect);
+            break;
+        case BOTTOM_RIGHT:
+            alignBottomRight(renderer, texture, &targetRect);
+            break;
+        case BOTTOM_LEFT:
+            alignBottomLeft(renderer, texture, &targetRect);
+            break;
+    }
 
     SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
 
