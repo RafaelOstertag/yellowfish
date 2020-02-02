@@ -25,17 +25,19 @@ namespace {
 
 struct Config;
 
-typedef screens::Image (*imageCreator_t)(const Config& config);
+typedef screens::Image (*imageRetriever_t)(const Config& config);
 
 struct Config {
-    bool fullScreen;
     int width;
     int height;
-    std::vector<imageCreator_t> imageCreators;
+    std::vector<imageRetriever_t> imageRetrievers;
+    bool fullScreen;
+    bool hiresOnly;
 };
 
 std::unique_ptr<net::Http> picsum;
 std::unique_ptr<net::Http> unsplash;
+std::unique_ptr<net::Http> imageServer;
 std::unique_ptr<net::NasaPod> nasaPod;
 
 utils::DirectoryLister directoryLister{localImageDir};
@@ -55,6 +57,16 @@ screens::Image unsplashImage(const Config& config) {
     std::cerr << "Loading Unsplash image\n";
 #endif
     auto data = picsum->get();
+
+    sdl::MemoryRWOps memoryRWOps{data, data.getLength()};
+    return screens::Image{memoryRWOps};
+}
+
+screens::Image imageServerImage(const Config& config) {
+#ifndef NDEBUG
+    std::cerr << "Loading Image Server image\n";
+#endif
+    auto data = imageServer->get();
 
     sdl::MemoryRWOps memoryRWOps{data, data.getLength()};
     return screens::Image{memoryRWOps};
@@ -96,7 +108,7 @@ screens::Image randomLocalImage(const Config& config) {
     return screens::Image{memoryRWOps};
 }
 
-screens::Image randomImage(const std::vector<imageCreator_t>& imageCreators,
+screens::Image randomImage(const std::vector<imageRetriever_t>& imageCreators,
                            const Config& config) {
     static auto screenSelector = std::bind(
         std::uniform_int_distribution<unsigned long>{0,
@@ -104,7 +116,7 @@ screens::Image randomImage(const std::vector<imageCreator_t>& imageCreators,
         std::mt19937(std::time(nullptr)));
 
     try {
-        imageCreator_t imageCreator{imageCreators[screenSelector()]};
+        imageRetriever_t imageCreator{imageCreators[screenSelector()]};
         return imageCreator(config);
     } catch (std::exception& e) {
         std::cerr << e.what() << '\n';
@@ -140,7 +152,7 @@ void run(const Config& config) {
         }
 
         if (timeKeeper.hasMinuteElapsed() || firstIteration) {
-            image = randomImage(config.imageCreators, config);
+            image = randomImage(config.imageRetrievers, config);
         }
 
         if (!image.isEmpty()) window.render(image);
@@ -156,14 +168,15 @@ void run(const Config& config) {
 
 void parseCommandLine(int argc, char** argv, Config& config) {
     config.fullScreen = false;
-    config.imageCreators = std::vector<imageCreator_t>{
-        randomLocalImage, nasaPictureOfTheDay, unsplashImage, picsumImage};
+    config.hiresOnly = false;
+    config.imageRetrievers = std::vector<imageRetriever_t>{
+        imageServerImage, nasaPictureOfTheDay, unsplashImage, picsumImage};
 
     if (argc == 1) {
         return;
     }
 
-    std::vector<imageCreator_t> selectedImageCreators;
+    std::vector<imageRetriever_t> selectedImageCreators;
     for (int i = 1; i < argc; i++) {
         char* argument{argv[i]};
         if (std::strcmp(argument, "full") == 0) {
@@ -171,8 +184,13 @@ void parseCommandLine(int argc, char** argv, Config& config) {
             continue;
         }
 
-        if (std::strcmp(argument, "local") == 0) {
-            selectedImageCreators.push_back(randomLocalImage);
+        if (std::strcmp(argument, "hiresonly") == 0) {
+            config.hiresOnly = true;
+            continue;
+        }
+
+        if (std::strcmp(argument, "imageserver") == 0) {
+            selectedImageCreators.push_back(imageServerImage);
             continue;
         }
 
@@ -191,18 +209,28 @@ void parseCommandLine(int argc, char** argv, Config& config) {
             continue;
         }
 
-        std::cerr << argv[0] << " [full] [local] [nasa] [unsplash] [picsum]\n";
-        std::cerr << "\nfull\t\tfull screen\n"
-                  << "local\t\tlocal random image from\n"
-                  << "\t\t" << localImageDir << '\n'
-                  << "nasa\t\tNASA picture of the day\n"
-                  << "unsplash\tunsplash image\n"
-                  << "picsum\t\tpicsum image\n";
+        if (std::strcmp(argument, "local") == 0) {
+            selectedImageCreators.push_back(randomLocalImage);
+            continue;
+        }
+
+        std::cerr << argv[0]
+                  << " [full] [hiresonly] [imageserver] [nasa] [unsplash] "
+                     "[picsum] [local]\n";
+        std::cerr
+            << "\nfull\t\tfull screen\n"
+            << "hiresonly\tonly high resolution images from image server\n"
+            << "imageserver\trandom image from image server\n"
+            << "nasa\t\tNASA picture of the day\n"
+            << "unsplash\tunsplash image\n"
+            << "picsum\t\tpicsum image\n"
+            << "local\t\tlocal random image from\n"
+            << "\t\t" << localImageDir << '\n';
         exit(1);
     }
 
     if (!selectedImageCreators.empty()) {
-        config.imageCreators = selectedImageCreators;
+        config.imageRetrievers = selectedImageCreators;
     }
 }
 
@@ -231,6 +259,14 @@ void setupImageRetrievers(const Config& config) {
         picsumUrl << config.width << '/' << config.height;
     }
     picsum = std::make_unique<net::Http>(picsumUrl.str());
+
+    std::stringstream imageServerUrl;
+    imageServerUrl << "http://colossus.kruemel.home:40005/images/"
+                   << config.width << '/' << config.height;
+    if (config.hiresOnly) {
+        imageServerUrl << "?size=large";
+    }
+    imageServer = std::make_unique<net::Http>(imageServerUrl.str());
 
     nasaPod = std::make_unique<net::NasaPod>();
 }
