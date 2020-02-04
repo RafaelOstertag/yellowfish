@@ -1,6 +1,11 @@
 set(sources 
+            config.cxx
+            imageretrievers/imageserver.cxx
+            imageretrievers/localfile.cxx
+            imageretrievers/nasapod.cxx
+            imageretrievers/picsum.cxx
+            imageretrievers/unsplash.cxx
             net/curl.cxx
-            net/nasapod.cxx
             screens/clock.cxx
             screens/colors.cxx
             screens/image.cxx

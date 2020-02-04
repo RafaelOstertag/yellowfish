@@ -58,6 +58,7 @@ class Http {
 
     Data get(std::string& contentType);
     Data get();
+    std::string getUrl() const { return url; }
 
    private:
     std::string url;
