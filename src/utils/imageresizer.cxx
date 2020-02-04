@@ -12,11 +12,11 @@ ImageResizer::ImageResizer(const Magick::Blob& blob)
 
 ImageResizer::~ImageResizer() {}
 
-std::shared_ptr<Magick::Blob> ImageResizer::resize(size_t s) {
-    return resize(s, s);
+std::shared_ptr<Magick::Blob> ImageResizer::resizeToMatch(size_t s) {
+    return resizeToMatch(s, s);
 }
 
-std::shared_ptr<Magick::Blob> ImageResizer::resize(size_t x, size_t y) {
+std::shared_ptr<Magick::Blob> ImageResizer::resizeToMatch(size_t x, size_t y) {
     Magick::Image workingImage = *image;
 
     auto width = workingImage.columns();

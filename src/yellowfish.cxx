@@ -81,7 +81,7 @@ screens::Image nasaPictureOfTheDay(const Config& config) {
 
     Magick::Blob imageBlob{data, data.getLength()};
     utils::ImageResizer imageResizer(imageBlob);
-    auto resizedImage = imageResizer.resize(config.width, config.height);
+    auto resizedImage = imageResizer.resizeToMatch(config.width, config.height);
 
     sdl::MemoryRWOps memoryRWOps{resizedImage->data(), resizedImage->length()};
     return screens::Image{memoryRWOps};
@@ -104,7 +104,7 @@ screens::Image randomLocalImage(const Config& config) {
     std::cerr << "Loading local image " << localImageFile << '\n';
 #endif
     utils::ImageResizer imageResizer(localImageFile);
-    auto imageBlob = imageResizer.resize(config.width, config.height);
+    auto imageBlob = imageResizer.resizeToMatch(config.width, config.height);
     sdl::MemoryRWOps memoryRWOps{imageBlob->data(), imageBlob->length()};
     return screens::Image{memoryRWOps};
 }

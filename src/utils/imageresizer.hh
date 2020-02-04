@@ -14,8 +14,8 @@ class ImageResizer {
     ~ImageResizer();
 
     /// Resize to a square
-    std::shared_ptr<Magick::Blob> resize(size_t s);
-    std::shared_ptr<Magick::Blob> resize(size_t x, size_t y);
+    std::shared_ptr<Magick::Blob> resizeToMatch(size_t s);
+    std::shared_ptr<Magick::Blob> resizeToMatch(size_t x, size_t y);
 
    private:
     std::shared_ptr<Magick::Image> image;
