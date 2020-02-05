@@ -8,7 +8,7 @@ class Sine : public sdl::Renderable {
    public:
     Sine(Sint32 x, Sint32 y, Sint32 width, Sint32 height,
          bool clearScreen = true);
-    virtual ~Sine() {}
+    virtual ~Sine() = default;
 
     virtual void render(const sdl::Renderer& renderer);
 

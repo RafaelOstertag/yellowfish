@@ -12,7 +12,7 @@ class HttpImageRetriever : public ImageRetriever {
    public:
     HttpImageRetriever(int width, int height)
         : ImageRetriever{width, height}, http{} {}
-    virtual ~HttpImageRetriever() {}
+    virtual ~HttpImageRetriever() = default;
 
     virtual screens::Image retrieve() {
 #ifndef NDEBUG

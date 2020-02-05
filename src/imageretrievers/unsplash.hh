@@ -10,7 +10,7 @@ namespace imageretriever {
 class Unsplash : public HttpImageRetriever {
    public:
     Unsplash(int width, int height);
-    virtual ~Unsplash() {}
+    virtual ~Unsplash() = default;
 };
 }  // namespace imageretriever
 

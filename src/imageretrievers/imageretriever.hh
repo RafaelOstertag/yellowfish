@@ -7,7 +7,7 @@ namespace imageretriever {
 class ImageRetriever {
    public:
     ImageRetriever(int width, int height) : _width{width}, _height{height} {}
-    virtual ~ImageRetriever() {}
+    virtual ~ImageRetriever() = default;
     virtual screens::Image retrieve() = 0;
 
    protected:

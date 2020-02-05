@@ -14,7 +14,7 @@ class Clock : public sdl::Renderable {
 
     Clock(const std::string& fontpath, int size, const sdl::Color& fontColor,
           Alignment alignment = CENTER, bool showSeconds = false);
-    virtual ~Clock() {}
+    virtual ~Clock() = default;
 
     Clock(const Clock&) = delete;
     Clock(Clock&&) = delete;

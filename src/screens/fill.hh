@@ -7,7 +7,7 @@ namespace screens {
 class Fill : public sdl::Renderable {
    public:
     Fill(const sdl::Color& fillColor) : fillColor{fillColor} {}
-    virtual ~Fill() {}
+    virtual ~Fill() = default;
 
     virtual void render(const sdl::Renderer& renderer) {
         SDL_SetRenderDrawColor(renderer, fillColor.red(), fillColor.green(),

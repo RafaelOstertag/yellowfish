@@ -9,7 +9,7 @@ class LocalFile : public ImageRetriever {
    public:
     LocalFile(int width, int height, const std::string& directory)
         : ImageRetriever{width, height}, directoryLister{directory} {}
-    virtual ~LocalFile() {}
+    virtual ~LocalFile() = default;
 
     virtual screens::Image retrieve();
 

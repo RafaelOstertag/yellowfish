@@ -8,7 +8,7 @@ namespace screens {
 class Colors : public sdl::Renderable {
    public:
     Colors(Sint32 x, Sint32 y, Sint32 width, Sint32 height);
-    virtual ~Colors() {}
+    virtual ~Colors() = default;
 
     virtual void render(const sdl::Renderer& renderer);
 

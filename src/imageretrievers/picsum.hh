@@ -7,7 +7,7 @@ namespace imageretriever {
 class Picsum : public HttpImageRetriever {
    public:
     Picsum(int width, int height);
-    virtual ~Picsum() {}
+    virtual ~Picsum() = default;
 };
 }  // namespace imageretriever
 

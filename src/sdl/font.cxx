@@ -14,7 +14,7 @@ Font::Font(const std::string& filepath, int size)
     }
 }
 
-Font::~Font() {}
+Font::~Font() = default;
 
 Font::Font(const Font& o) { ttfFont = o.ttfFont; }
 

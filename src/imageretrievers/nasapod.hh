@@ -10,7 +10,7 @@ namespace imageretriever {
 class NasaPod : public HttpImageRetriever {
    public:
     NasaPod(int width, int height, const std::string& apiKey = "DEMO_KEY");
-    virtual ~NasaPod() {}
+    virtual ~NasaPod() = default;
 
     virtual screens::Image retrieve();
 
