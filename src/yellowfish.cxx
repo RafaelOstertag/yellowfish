@@ -49,7 +49,7 @@ void run(const config::Config& config) {
     screens::Clock clock{clockFont, 200, sdl::Color{0xff, 0xff, 0xff, 0x90},
                          config.alignment};
 
-    utils::TimeKeeper timeKeeper;
+    utils::TimeKeeper timeKeeper{config.period};
 
     bool firstIteration{true};
     screens::Image image;
@@ -65,7 +65,7 @@ void run(const config::Config& config) {
             }
         }
 
-        if (timeKeeper.hasMinuteElapsed() || firstIteration) {
+        if (timeKeeper.hasElapsed() || firstIteration) {
             image = randomImage(config);
         }
 

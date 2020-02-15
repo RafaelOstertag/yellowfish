@@ -32,17 +32,18 @@ bool wantHiresOnly(int argc, char** argv) {
 }
 
 int getWindowWidth(bool fullscreen) {
-    return fullscreen ? sdl::SDL::displayWidth() : 1280;
+    return fullscreen ? sdl::SDL::displayWidth() : 720;
 }
 
 int getWindowHeight(bool fullscreen) {
-    return fullscreen ? sdl::SDL::displayHeight() : 768;
+    return fullscreen ? sdl::SDL::displayHeight() : 720;
 }
 
 }  // namespace
 
 namespace config {
 void configure(int argc, char** argv, Config& config) {
+    config.period = 60;
     config.fullScreen = wantFullScreen(argc, argv);
     config.hiresOnly = wantHiresOnly(argc, argv);
     config.width = getWindowWidth(config.fullScreen);
@@ -138,6 +139,21 @@ void configure(int argc, char** argv, Config& config) {
             continue;
         }
 
+        if (std::strcmp(argument, "45") == 0) {
+            config.period = 45;
+            continue;
+        }
+
+        if (std::strcmp(argument, "30") == 0) {
+            config.period = 30;
+            continue;
+        }
+
+        if (std::strcmp(argument, "15") == 0) {
+            config.period = 15;
+            continue;
+        }
+
         std::cerr << argv[0]
                   << " [full] [hiresonly] [imageserver] [nasa] [unsplash] "
                      "[picsum] [local]\n\t[center|tl|tr|bl|br]\n";
@@ -154,7 +170,10 @@ void configure(int argc, char** argv, Config& config) {
             << "tl\t\talign clock top left\n"
             << "tr\t\talign clock top right\n"
             << "bl\t\talign clock bottom left\n"
-            << "br\t\talign clock bottom right\n";
+            << "br\t\talign clock bottom right\n"
+            << "15\t\t15s delay\n"
+            << "30\t\t30s delay\n"
+            << "45\t\t45s delay\n";
         exit(1);
     }
 

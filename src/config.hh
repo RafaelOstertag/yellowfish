@@ -7,10 +7,10 @@
 #include "imageretrievers/imageretriever.hh"
 #include "screens/clock.hh"
 
-
 namespace config {
 
 struct Config {
+    int period;
     int width;
     int height;
     std::vector<std::shared_ptr<imageretriever::ImageRetriever>>

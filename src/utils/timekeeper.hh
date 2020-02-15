@@ -6,15 +6,14 @@
 namespace utils {
 class TimeKeeper {
    public:
-    TimeKeeper();
+    TimeKeeper(int seconds);
 
-    bool hasMinuteElapsed();
-    bool hasSecondElapsed();
+    bool hasElapsed();
 
    private:
     using time_point = std::chrono::system_clock::time_point;
-    time_point lastTimePointSeconds;
-    time_point lastTimePointMinutes;
+    int period;
+    time_point lastTimePoint;
 
     time_point now() const;
 };
