@@ -56,6 +56,7 @@
         "cstring": "cpp",
         "ctime": "cpp",
         "map": "cpp",
-        "ratio": "cpp"
+        "ratio": "cpp",
+        "future": "cpp"
     }
 }
