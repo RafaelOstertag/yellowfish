@@ -19,6 +19,7 @@ class MemoryRWOps {
     constexpr SDL_RWops* getRWOps() const { return memRWOps; }
 
    private:
+    uint8_t* buffer;
     SDL_RWops* memRWOps;
 
     void destroyRWOps();
