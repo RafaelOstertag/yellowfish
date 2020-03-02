@@ -56,9 +56,9 @@ void run(const config::Config& config) {
 
     SDL_Event event;
 
-    screens::Fill fill{sdl::Color{0x0, 0x0, 0x0, 0x80}};
+    screens::Fill fill{sdl::Color{0x0, 0x0, 0x0, 0xff}};
 
-    screens::Clock clock{clockFont, 200, sdl::Color{0xff, 0xff, 0xff, 0x90},
+    screens::Clock clock{clockFont, 200, sdl::Color{0xff, 0xff, 0xff, 0xf0},
                          config.alignment};
 
     utils::TimeKeeper timeKeeper{config.period};
@@ -81,8 +81,8 @@ void run(const config::Config& config) {
             image = randomImage(config);
         }
 
-        if (!image.isEmpty()) window.render(image);
         window.render(fill);
+        if (!image.isEmpty()) window.render(image);
         window.render(clock);
 
         window.update();
