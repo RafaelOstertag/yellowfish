@@ -36,6 +36,7 @@ NasaPod::NasaPod(int width, int height, const std::string& apiKey)
 
 screens::Image NasaPod::retrieve() {
     fetchFromNasa();
+    SDL_RWseek(sdlMemory->getRWOps(), 0, RW_SEEK_SET);
     return screens::Image{*sdlMemory};
 }
 
