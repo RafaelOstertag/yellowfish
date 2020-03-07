@@ -39,7 +39,7 @@ screens::Image randomImage(const config::Config& config) {
                 -> screens::Image { return r->retrieve(); },
             retriever);
 
-        auto result = image.wait_for(std::chrono::seconds(30));
+        auto result = image.wait_for(std::chrono::seconds(60));
         if (result != std::future_status::ready) {
             throw std::runtime_error("Timeout while retrieving image");
         }
