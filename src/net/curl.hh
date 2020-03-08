@@ -48,7 +48,7 @@ class Data {
 
 class Http {
    public:
-    Http(const std::string& url);
+    Http(const std::string& url, long connectTimeout = 2, long timeout = 30);
     ~Http();
 
     Http(const Http& o);

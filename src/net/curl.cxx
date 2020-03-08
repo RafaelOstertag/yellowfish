@@ -146,7 +146,8 @@ int curl_writer(char* data, size_t size, size_t nmemb, Data* buffer) {
 }
 }  // namespace
 
-Http::Http(const std::string& url) : url{url}, connection{nullptr} {
+Http::Http(const std::string& url, long connectTimeout, long timeout)
+    : url{url}, connection{nullptr} {
     Curl::initialize();
     connection = curl_easy_init();
     if (connection == nullptr) {
@@ -176,6 +177,20 @@ Http::Http(const std::string& url) : url{url}, connection{nullptr} {
     if (code != CURLE_OK) {
         std::stringstream msg;
         msg << "Failed to set writer: " << errorBuffer;
+        throw std::runtime_error(msg.str());
+    }
+
+    code = curl_easy_setopt(connection, CURLOPT_CONNECTTIMEOUT, connectTimeout);
+    if (code != CURLE_OK) {
+        std::stringstream msg;
+        msg << "Failed to set connect timeout: " << errorBuffer;
+        throw std::runtime_error(msg.str());
+    }
+
+    code = curl_easy_setopt(connection, CURLOPT_TIMEOUT, timeout);
+    if (code != CURLE_OK) {
+        std::stringstream msg;
+        msg << "Failed to set timeout: " << errorBuffer;
         throw std::runtime_error(msg.str());
     }
 }

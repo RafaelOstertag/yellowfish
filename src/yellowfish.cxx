@@ -3,7 +3,6 @@
 #include <algorithm>
 #include <chrono>
 #include <functional>
-#include <future>
 #include <iostream>
 #include <random>
 #include <sstream>
@@ -30,20 +29,9 @@ screens::Image randomImage(const config::Config& config) {
             0, config.imageRetrievers.size() - 1},
         std::mt19937(std::time(nullptr)));
 
-    auto retriever{config.imageRetrievers[screenSelector()]};
-
     try {
-        auto image = std::async(
-            std::launch::async,
-            [](std::shared_ptr<imageretriever::ImageRetriever> r)
-                -> screens::Image { return r->retrieve(); },
-            retriever);
-
-        auto result = image.wait_for(std::chrono::seconds(60));
-        if (result != std::future_status::ready) {
-            throw std::runtime_error("Timeout while retrieving image");
-        }
-        return image.get();
+        auto retriever{config.imageRetrievers[screenSelector()]};
+        return retriever->retrieve();
     } catch (std::exception& e) {
         std::cerr << e.what() << '\n';
         return screens::Image();
