@@ -5,7 +5,10 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/src/yellowfish",
-            "args": [],
+            "args": [
+                "nasa",
+                "15"
+            ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

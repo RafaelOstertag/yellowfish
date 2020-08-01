@@ -154,6 +154,11 @@ void configure(int argc, char** argv, Config& config) {
             continue;
         }
 
+        if (std::strcmp(argument, "5") == 0) {
+            config.period = 5;
+            continue;
+        }
+
         std::cerr << argv[0]
                   << " [full] [hiresonly] [imageserver] [nasa] [unsplash] "
                      "[picsum] [local]\n\t[center|tl|tr|bl|br]\n";
@@ -171,6 +176,7 @@ void configure(int argc, char** argv, Config& config) {
             << "tr\t\talign clock top right\n"
             << "bl\t\talign clock bottom left\n"
             << "br\t\talign clock bottom right\n"
+            << "15\t\t15s delay\n"
             << "15\t\t15s delay\n"
             << "30\t\t30s delay\n"
             << "45\t\t45s delay\n";
