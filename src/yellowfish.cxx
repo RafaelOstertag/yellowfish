@@ -46,7 +46,7 @@ void run(const config::Config& config) {
 
     screens::Fill fill{sdl::Color{0x0, 0x0, 0x0, 0xff}};
 
-    screens::Clock clock{clockFont, 200, sdl::Color{0xff, 0xff, 0xff, 0xf0},
+    screens::Clock clock{clockFont, 200, sdl::Color{0xff, 0xff, 0xff, 0xd0},
                          config.alignment};
 
     utils::TimeKeeper timeKeeper{config.period};
