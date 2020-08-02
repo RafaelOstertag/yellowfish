@@ -90,12 +90,47 @@ void alignBottomRight(const sdl::Renderer& renderer, SDL_Texture* texture,
     targetRect->h = textureHeight;
 }
 
+void renderTextBackground(const sdl::Renderer& renderer,
+                          const SDL_Rect& textRect, const sdl::Color& color) {
+    SDL_Rect viewPort;
+    SDL_RenderGetViewport(renderer, &viewPort);
+
+    SDL_Rect backgroundRect;
+    backgroundRect.h = textRect.h;
+    backgroundRect.w = viewPort.w;
+    backgroundRect.x = 0;
+    backgroundRect.y = textRect.y;
+
+    Uint8 savedRed;
+    Uint8 savedGreen;
+    Uint8 savedBlue;
+    Uint8 savedAlpha;
+    SDL_GetRenderDrawColor(renderer, &savedRed, &savedGreen, &savedBlue,
+                           &savedAlpha);
+    SDL_SetRenderDrawColor(renderer, color.red(), color.green(), color.blue(),
+                           color.alpha());
+
+    SDL_BlendMode savedBlendMode;
+    SDL_GetRenderDrawBlendMode(renderer, &savedBlendMode);
+
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+
+    SDL_RenderFillRect(renderer, &backgroundRect);
+    
+    SDL_SetRenderDrawColor(renderer, savedRed, savedGreen, savedBlue,
+                           savedAlpha);
+    SDL_SetRenderDrawBlendMode(renderer, savedBlendMode);
+}
+
 }  // namespace
 
 Clock::Clock(const std::string& fontpath, int size, const sdl::Color& fontColor,
              Alignment alignment, bool showSeconds)
     : font{new sdl::Font{fontpath, size}},
       color{fontColor},
+      background{static_cast<unsigned char>(0xff - fontColor.red()),
+                 static_cast<unsigned char>(0xff - fontColor.green()),
+                 static_cast<unsigned char>(0xff - fontColor.blue()), 64},
       alignment{alignment},
       showSeconds{showSeconds} {}
 
@@ -123,6 +158,7 @@ void Clock::render(const sdl::Renderer& renderer) {
     }
 
     SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+    renderTextBackground(renderer, targetRect, background);
 
     SDL_RenderCopy(renderer, texture, NULL, &targetRect);
     SDL_DestroyTexture(texture);

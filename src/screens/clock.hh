@@ -24,6 +24,7 @@ class Clock : public sdl::Renderable {
    private:
     sdl::FontPtr font;
     sdl::Color color;
+    sdl::Color background;
     Alignment alignment;
     bool showSeconds;
 
