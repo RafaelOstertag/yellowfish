@@ -57,6 +57,9 @@
         "ctime": "cpp",
         "map": "cpp",
         "ratio": "cpp",
-        "future": "cpp"
+        "future": "cpp",
+        "ranges": "cpp",
+        "compare": "cpp",
+        "concepts": "cpp"
     }
 }

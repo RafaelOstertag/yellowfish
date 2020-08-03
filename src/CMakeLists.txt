@@ -10,6 +10,7 @@ set(sources
             screens/colors.cxx
             screens/image.cxx
             screens/sine.cxx
+            screens/weather.cxx
             sdl/font.cxx
             sdl/memoryrwops.cxx
             sdl/renderer.cxx 
@@ -18,6 +19,7 @@ set(sources
             utils/dirlist.cxx
             utils/imageresizer.cxx
             utils/timekeeper.cxx
+            weatherretriever/weather.cxx
             yellowfish.cxx
 )
 

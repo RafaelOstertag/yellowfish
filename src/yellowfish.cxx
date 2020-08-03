@@ -14,6 +14,7 @@
 #include "screens/clock.hh"
 #include "screens/fill.hh"
 #include "screens/image.hh"
+#include "screens/weather.hh"
 #include "sdl/memoryrwops.hh"
 #include "sdl/sdl.hh"
 #include "sdl/window.hh"
@@ -48,8 +49,11 @@ void run(const config::Config& config) {
 
     screens::Clock clock{clockFont, 200, sdl::Color{0xff, 0xff, 0xff, 0xd0},
                          config.alignment};
+    screens::Weather weather{clockFont, 75, sdl::Color{0xff, 0xff, 0xff, 0xd0}};
 
     utils::TimeKeeper timeKeeper{config.period};
+
+    weatherretriever::Weather weatherRetriever;
 
     bool firstIteration{true};
     screens::Image image;
@@ -71,7 +75,9 @@ void run(const config::Config& config) {
 
         window.render(fill);
         if (!image.isEmpty()) window.render(image);
+
         window.render(clock);
+        window.render(weather);
 
         window.update();
 
