@@ -6,7 +6,7 @@
 namespace imageretriever {
 class ImageServer : public HttpImageRetriever {
    public:
-    ImageServer(int width, int height, bool hiresOnly);
+    ImageServer(int width, int height);
     virtual ~ImageServer() = default;
 };
 }  // namespace imageretriever

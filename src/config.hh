@@ -17,7 +17,6 @@ struct Config {
         imageRetrievers;
     screens::Clock::Alignment alignment;
     bool fullScreen;
-    bool hiresOnly;
 };
 
 extern void configure(int argc, char** argv, Config& config);

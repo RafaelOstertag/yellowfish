@@ -12,6 +12,7 @@
 #include "imageretrievers/nasapod.hh"
 #include "net/curl.hh"
 #include "screens/clock.hh"
+#include "screens/fadein.hh"
 #include "screens/fill.hh"
 #include "screens/image.hh"
 #include "screens/weather.hh"
@@ -55,6 +56,8 @@ void run(const config::Config& config) {
 
     weatherretriever::Weather weatherRetriever;
 
+    screens::FadeIn fadeIn{sdl::Color{0x0, 0x0, 0x0, 0xff}, 25};
+
     bool firstIteration{true};
     screens::Image image;
     while (true) {
@@ -71,10 +74,12 @@ void run(const config::Config& config) {
 
         if (timeKeeper.hasElapsed() || firstIteration) {
             image = randomImage(config);
+            fadeIn.reset();
         }
 
         window.render(fill);
         if (!image.isEmpty()) window.render(image);
+        window.render(fadeIn);
 
         window.render(clock);
         window.render(weather);
@@ -82,7 +87,7 @@ void run(const config::Config& config) {
         window.update();
 
         firstIteration = false;
-        SDL_Delay(300);
+        SDL_Delay(15);
     }
 }
 

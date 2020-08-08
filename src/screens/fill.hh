@@ -1,6 +1,7 @@
 #ifndef __FILL_HH
 #define __FILL_HH
 
+#include "../sdl/color.hh"
 #include "../sdl/renderable.hh"
 
 namespace screens {
@@ -18,6 +19,9 @@ class Fill : public sdl::Renderable {
         SDL_RenderFillRect(renderer, NULL);
         SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
     }
+
+   protected:
+    void setFillColor(const sdl::Color& fc) { fillColor = fc; }
 
    private:
     sdl::Color fillColor;

@@ -61,5 +61,11 @@
         "ranges": "cpp",
         "compare": "cpp",
         "concepts": "cpp"
-    }
+    },
+    "C_Cpp.default.intelliSenseMode": "clang-x64",
+    "C_Cpp.default.includePath": [
+        "/usr/include/ImageMagick-6",
+        "/usr/include/SDL2",
+        "${workspaceFolder}/**"
+    ]
 }
