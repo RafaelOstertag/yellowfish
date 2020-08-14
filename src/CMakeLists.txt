@@ -8,6 +8,7 @@ set(sources
             net/curl.cxx
             screens/clock.cxx
             screens/colors.cxx
+            screens/fadein.cxx
             screens/image.cxx
             screens/sine.cxx
             screens/weather.cxx

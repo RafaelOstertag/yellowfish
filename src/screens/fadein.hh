@@ -4,38 +4,33 @@
 #include "fill.hh"
 
 namespace screens {
+
+class FadeInCallback {
+   public:
+    virtual ~FadeInCallback() = default;
+    virtual void fadingIn() = 0;
+    virtual void done() = 0;
+};
+
 class FadeIn : public Fill {
    public:
-    FadeIn(const sdl::Color& fillColor, unsigned char fadeInStep = 10)
-        : Fill{fillColor},
-          initialOpaqueColor{fillColor.red(), fillColor.green(),
-                             fillColor.blue(), 0xff},
-          currentFillColor{initialOpaqueColor},
-          fadeInStep{fadeInStep} {}
+    FadeIn(const sdl::Color& fillColor, unsigned char fadeInStep = 10);
+    FadeIn(const sdl::Color& fillColor, FadeInCallback& fadeInCallback,
+           unsigned char fadeInStep = 10);
+
     virtual ~FadeIn() = default;
 
-    virtual void render(const sdl::Renderer& renderer) {
-        if (currentFillColor.alpha() == 0) {
-            // there is no reason to draw it
-            return;
-        }
-        setFillColor(currentFillColor);
-        Fill::render(renderer);
-        auto currentAlpha = currentFillColor.alpha();
-        unsigned char newAlpha = currentAlpha - fadeInStep;
-        currentFillColor = sdl::Color{
-            currentFillColor.red(), currentFillColor.green(),
-            currentFillColor.blue(),
-            newAlpha > currentAlpha ? static_cast<unsigned char>(0) : newAlpha};
-    }
+    virtual void render(const sdl::Renderer& renderer);
 
     void reset() { currentFillColor = initialOpaqueColor; }
 
    private:
     sdl::Color initialOpaqueColor;
     sdl::Color currentFillColor;
+    FadeInCallback& fadeInCallback;
     unsigned char fadeInStep;
 };
+
 }  // namespace screens
 
 #endif

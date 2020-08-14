@@ -25,6 +25,20 @@
 
 namespace {
 
+static constexpr int DELAY_DURING_FADEIN{15};
+static constexpr int DELAY_NO_FADEIN_IN_PROGRESS{300};
+
+class FadeInDelayAdjuster : public screens::FadeInCallback {
+   public:
+    FadeInDelayAdjuster(int& delayReference) : delayReference{delayReference} {}
+    virtual ~FadeInDelayAdjuster() = default;
+    virtual void fadingIn() { delayReference = DELAY_DURING_FADEIN; }
+    virtual void done() { delayReference = DELAY_NO_FADEIN_IN_PROGRESS; }
+
+   private:
+    int& delayReference;
+};
+
 screens::Image randomImage(const config::Config& config) {
     static auto screenSelector = std::bind(
         std::uniform_int_distribution<unsigned long>{
@@ -56,7 +70,10 @@ void run(const config::Config& config) {
 
     weatherretriever::Weather weatherRetriever;
 
-    screens::FadeIn fadeIn{sdl::Color{0x0, 0x0, 0x0, 0xff}, 25};
+    int delay = DELAY_NO_FADEIN_IN_PROGRESS;
+    FadeInDelayAdjuster fadeInDelayAdjuster{delay};
+    screens::FadeIn fadeIn{sdl::Color{0x0, 0x0, 0x0, 0xff}, fadeInDelayAdjuster,
+                           25};
 
     bool firstIteration{true};
     screens::Image image;
@@ -87,7 +104,7 @@ void run(const config::Config& config) {
         window.update();
 
         firstIteration = false;
-        SDL_Delay(15);
+        SDL_Delay(delay);
     }
 }
 
