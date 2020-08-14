@@ -9,7 +9,7 @@ class NoOpFadeInCallback : public FadeInCallback {
     virtual void done() {}
 };
 NoOpFadeInCallback NO_OP_FADEIN_CALLBACK{};
-};  // namespace
+}  // namespace
 
 FadeIn::FadeIn(const sdl::Color& fillColor, unsigned char fadeInStep)
     : Fill{fillColor},

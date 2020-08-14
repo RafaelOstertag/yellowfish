@@ -18,7 +18,7 @@ class Font {
     Font(Font&& other);
     Font& operator=(Font&& other);
 
-    constexpr operator TTF_Font*() const { return ttfFont.get(); }
+    operator TTF_Font*() const { return ttfFont.get(); }
 
    private:
     std::shared_ptr<TTF_Font> ttfFont;
