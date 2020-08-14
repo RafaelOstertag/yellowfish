@@ -20,7 +20,7 @@ class Image : public sdl::Renderable {
 
     virtual void render(const sdl::Renderer& renderer);
 
-    constexpr bool isEmpty() {
+    constexpr bool isEmpty() const {
         return surface == nullptr && texture == nullptr;
     }
 

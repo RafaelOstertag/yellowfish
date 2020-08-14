@@ -10,13 +10,13 @@ class Color {
           unsigned char blue = 0, unsigned char alpha = 0xff)
         : sdlColor{red, green, blue, alpha} {}
 
-    unsigned char red() const { return sdlColor.r; }
-    unsigned char green() const { return sdlColor.g; }
-    unsigned char blue() const { return sdlColor.b; }
-    unsigned char alpha() const { return sdlColor.a; }
+    constexpr unsigned char red() const { return sdlColor.r; }
+    constexpr unsigned char green() const { return sdlColor.g; }
+    constexpr unsigned char blue() const { return sdlColor.b; }
+    constexpr unsigned char alpha() const { return sdlColor.a; }
 
-    operator const SDL_Color*() const { return &sdlColor; }
-    operator SDL_Color() const { return sdlColor; }
+    constexpr operator const SDL_Color*() const { return &sdlColor; }
+    constexpr operator SDL_Color() const { return sdlColor; }
 
    private:
     SDL_Color sdlColor;
