@@ -1,0 +1,10 @@
+[Unit]
+Description=Clock with Wallpaper
+
+[Service]
+Environment="DISPLAY=:0.0"
+Environment="XAUTHORITY=/home/pi/.Xauthority"
+ExecStart=/usr/local/bin/yellowfish 5 imageserver full
+
+[Install]
+WantedBy=default.target
