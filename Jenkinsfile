@@ -4,7 +4,6 @@ pipeline {
     }
 
     options {
-        // Running the playbooks multiple times seems a bad idea
         disableConcurrentBuilds()
         ansiColor('xterm')
         buildDiscarder logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '10')
