@@ -67,5 +67,6 @@
         "/usr/include/ImageMagick-6",
         "/usr/include/SDL2",
         "${workspaceFolder}/**"
-    ]
+    ],
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
 }

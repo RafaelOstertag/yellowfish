@@ -5,7 +5,7 @@
 using namespace imageretriever;
 
 namespace {
-const char* baseUrl{"http://images.kruemel.home:40005/images/"};
+const char* baseUrl{"http://imageserver.app.k8s.kruemel.home/images/"};
 }  // namespace
 
 ImageServer::ImageServer(int width, int height)
