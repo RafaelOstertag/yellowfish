@@ -11,8 +11,8 @@ class ImageRetriever {
     virtual screens::Image retrieve() = 0;
 
    protected:
-    int width() { return _width; }
-    int height() { return _height; }
+    int width() const { return _width; }
+    int height() const { return _height; }
 
    private:
     int _width;

@@ -5,13 +5,12 @@
 #include "imageretriever.hh"
 
 namespace imageretriever {
-class LocalFile : public ImageRetriever {
+class LocalFile final: public ImageRetriever {
    public:
     LocalFile(int width, int height, const std::string& directory)
         : ImageRetriever{width, height}, directoryLister{directory} {}
-    virtual ~LocalFile() = default;
 
-    virtual screens::Image retrieve();
+    screens::Image retrieve() override;
 
    private:
     utils::DirectoryLister directoryLister;

@@ -4,10 +4,9 @@
 #include "httpimageretriever.hh"
 
 namespace imageretriever {
-class Picsum : public HttpImageRetriever {
+class Picsum final : public HttpImageRetriever {
    public:
     Picsum(int width, int height);
-    virtual ~Picsum() = default;
 };
 }  // namespace imageretriever
 

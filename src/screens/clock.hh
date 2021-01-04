@@ -1,6 +1,7 @@
 #ifndef __CLOCK_HH
 #define __CLOCK_HH
 
+#include <stdexcept>
 #include <string>
 
 #include "../sdl/color.hh"
@@ -8,18 +9,23 @@
 #include "../sdl/renderable.hh"
 
 namespace screens {
-class Clock : public sdl::Renderable {
+class Clock final : public sdl::Renderable {
    public:
-    enum Alignment { TOP_RIGHT, TOP_LEFT, BOTTOM_RIGHT, BOTTOM_LEFT, CENTER };
+    enum class Alignment {
+        TOP_RIGHT,
+        TOP_LEFT,
+        BOTTOM_RIGHT,
+        BOTTOM_LEFT,
+        CENTER
+    };
 
     Clock(const std::string& fontpath, int size, const sdl::Color& fontColor,
-          Alignment alignment = CENTER, bool showSeconds = false);
-    virtual ~Clock() = default;
+          Alignment alignment = Alignment::CENTER, bool showSeconds = false);
 
     Clock(const Clock&) = delete;
     Clock(Clock&&) = delete;
 
-    virtual void render(const sdl::Renderer& renderer);
+    void render(const sdl::Renderer& renderer) override;
 
    private:
     sdl::FontPtr font;
@@ -27,9 +33,11 @@ class Clock : public sdl::Renderable {
     sdl::Color background;
     Alignment alignment;
     bool showSeconds;
+};
 
-    SDL_Texture* textToTexture(const std::string& text,
-                               const sdl::Renderer& renderer);
+class InvalidAlignmentError final : public std::invalid_argument {
+   public:
+    using std::invalid_argument::invalid_argument;
 };
 }  // namespace screens
 

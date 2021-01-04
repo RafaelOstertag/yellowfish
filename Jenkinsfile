@@ -36,6 +36,13 @@ pipeline {
                         }
                     }
                 }
+                stage('Checks') {
+                    steps {
+                        dir('build') {
+                            sh 'ctest'
+                        }
+                    }
+                }
 
                 stage('Analyze') {
                     steps {

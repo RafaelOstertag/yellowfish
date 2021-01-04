@@ -4,18 +4,18 @@
 #include <SDL.h>
 
 namespace sdl {
-class Renderer {
+class Renderer final {
    public:
-    Renderer(SDL_Renderer* renderer = nullptr);
+    explicit Renderer(SDL_Renderer* renderer = nullptr);
     ~Renderer();
 
     Renderer(const Renderer&) = delete;
     Renderer& operator=(const Renderer&) = delete;
 
-    Renderer(Renderer&&);
-    Renderer& operator=(Renderer&& o);
+    Renderer(Renderer&&) noexcept;
+    Renderer& operator=(Renderer&& o) noexcept;
 
-    constexpr operator SDL_Renderer*() const { return sdlRenderer; }
+    SDL_Renderer* get() const { return sdlRenderer; }
 
    private:
     SDL_Renderer* sdlRenderer;

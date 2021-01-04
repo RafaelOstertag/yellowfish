@@ -9,10 +9,10 @@
 #include "../utils/timekeeper.hh"
 
 namespace weatherretriever {
-class Weather {
+
+class Weather final {
    public:
-    Weather();
-    virtual ~Weather() = default;
+    Weather() = default;
 
     std::string getTemperature();
 
@@ -21,10 +21,12 @@ class Weather {
         std::string temperature;
     };
 
-    net::Http http;
-    utils::TimeKeeper timeKeeper;
-    WeatherInformation currentInformation;
-    bool firstRun;
+    net::Http http{
+        "https://data.geo.admin.ch/ch.meteoschweiz.messwerte-aktuell/"
+        "VQHA80.csv"};
+    utils::TimeKeeper timeKeeper{900};
+    WeatherInformation currentInformation{"-"};
+    bool firstRun{true};
 
     void fetchInformation();
     void extractInformationFromData(const net::Data& data);

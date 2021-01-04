@@ -21,19 +21,20 @@
 #include "sdl/window.hh"
 #include "utils/dirlist.hh"
 #include "utils/imageresizer.hh"
+#include "utils/retriever_error.hh"
 #include "utils/timekeeper.hh"
 
 namespace {
 
-static constexpr int DELAY_DURING_FADEIN{15};
-static constexpr int DELAY_NO_FADEIN_IN_PROGRESS{300};
+constexpr int DELAY_DURING_FADEIN{15};
+constexpr int DELAY_NO_FADEIN_IN_PROGRESS{300};
 
-class FadeInDelayAdjuster : public screens::FadeInCallback {
+class FadeInDelayAdjuster final : public screens::FadeInCallback {
    public:
-    FadeInDelayAdjuster(int& delayReference) : delayReference{delayReference} {}
-    virtual ~FadeInDelayAdjuster() = default;
-    virtual void fadingIn() { delayReference = DELAY_DURING_FADEIN; }
-    virtual void done() { delayReference = DELAY_NO_FADEIN_IN_PROGRESS; }
+    explicit FadeInDelayAdjuster(int& delayReference)
+        : delayReference{delayReference} {}
+    void fadingIn() override { delayReference = DELAY_DURING_FADEIN; }
+    void done() override { delayReference = DELAY_NO_FADEIN_IN_PROGRESS; }
 
    private:
     int& delayReference;
@@ -48,7 +49,7 @@ screens::Image randomImage(const config::Config& config) {
     try {
         auto retriever{config.imageRetrievers[screenSelector()]};
         return retriever->retrieve();
-    } catch (std::exception& e) {
+    } catch (const utils::RetrieverError& e) {
         std::cerr << e.what() << '\n';
         return screens::Image();
     }
@@ -81,11 +82,9 @@ void run(const config::Config& config) {
         while (SDL_PollEvent(&event) != 0) {
             if (event.type == SDL_QUIT) {
                 return;
-            } else if (event.type == SDL_KEYDOWN) {
-                switch (event.key.keysym.sym) {
-                    case SDLK_q:
-                        return;
-                }
+            } else if (event.type == SDL_KEYDOWN &&
+                       event.key.keysym.sym == SDLK_q) {
+                return;
             }
         }
 
@@ -130,7 +129,7 @@ int main(int argc, char** argv) {
     try {
         run(config);
         return 0;
-    } catch (std::exception& e) {
+    } catch (const std::exception& e) {
         std::cerr << "Ooops! " << e.what() << "\n";
         return 2;
     }

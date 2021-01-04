@@ -7,19 +7,20 @@
 #include "httpimageretriever.hh"
 
 namespace imageretriever {
-class NasaPod : public HttpImageRetriever {
+class NasaPod final : public HttpImageRetriever {
    public:
     NasaPod(int width, int height, const std::string& apiKey = "DEMO_KEY");
-    virtual ~NasaPod() = default;
 
-    virtual screens::Image retrieve();
+    screens::Image retrieve() override;
 
    private:
-    std::unique_ptr<sdl::MemoryRWOps> sdlMemory;
-    std::chrono::system_clock::time_point lastRetrieved;
+    std::unique_ptr<sdl::MemoryRWOps> sdlMemory{};
+    std::chrono::system_clock::time_point lastRetrieved{};
 
-    std::string getPictureOfTheDayUrl();
+    std::string getPictureOfTheDayUrl() const;
     void fetchFromNasa();
+    std::unique_ptr<sdl::MemoryRWOps> data_to_memory_rw_ops(
+        const net::Data& picture_data) const;
 };
 }  // namespace imageretriever
 

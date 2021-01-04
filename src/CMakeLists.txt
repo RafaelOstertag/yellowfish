@@ -1,5 +1,6 @@
 set(sources 
             config.cxx
+            imageretrievers/httpimageretriever.cxx
             imageretrievers/imageserver.cxx
             imageretrievers/localfile.cxx
             imageretrievers/nasapod.cxx
@@ -10,7 +11,6 @@ set(sources
             screens/colors.cxx
             screens/fadein.cxx
             screens/image.cxx
-            screens/sine.cxx
             screens/weather.cxx
             sdl/font.cxx
             sdl/memoryrwops.cxx
@@ -19,6 +19,7 @@ set(sources
             sdl/window.cxx
             utils/dirlist.cxx
             utils/imageresizer.cxx
+            utils/textrenderer.cxx
             utils/timekeeper.cxx
             weatherretriever/weather.cxx
             yellowfish.cxx

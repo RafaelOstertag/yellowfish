@@ -10,22 +10,19 @@
 namespace imageretriever {
 class HttpImageRetriever : public ImageRetriever {
    public:
-    HttpImageRetriever(int width, int height)
-        : ImageRetriever{width, height}, http{} {}
-    virtual ~HttpImageRetriever() = default;
+    using ImageRetriever::ImageRetriever;
 
-    virtual screens::Image retrieve() {
-#ifndef NDEBUG
-        std::cerr << "Loading image from " << http->getUrl() << '\n';
-#endif
-        auto data = http->get();
+    screens::Image retrieve() override;
 
-        sdl::MemoryRWOps memoryRWOps{data, data.getLength()};
-        return screens::Image{memoryRWOps};
+    void set_url(const std::string& url) {
+        http = std::make_unique<net::Http>(url);
     }
 
    protected:
-    std::unique_ptr<net::Http> http;
+    net::Data get_image() const;
+
+   private:
+    std::unique_ptr<net::Http> http{};
 };
 }  // namespace imageretriever
 

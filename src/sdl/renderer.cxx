@@ -6,11 +6,11 @@ Renderer::Renderer(SDL_Renderer* renderer) : sdlRenderer{renderer} {}
 
 Renderer::~Renderer() { destroyRenderer(); }
 
-Renderer::Renderer(Renderer&& o) : sdlRenderer{o.sdlRenderer} {
+Renderer::Renderer(Renderer&& o) noexcept : sdlRenderer{o.sdlRenderer} {
     o.sdlRenderer = nullptr;
 }
 
-Renderer& Renderer::operator=(Renderer&& o) {
+Renderer& Renderer::operator=(Renderer&& o) noexcept {
     destroyRenderer();
 
     sdlRenderer = o.sdlRenderer;

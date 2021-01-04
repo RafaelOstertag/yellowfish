@@ -7,6 +7,8 @@
 #include <iostream>
 #include <sstream>
 
+#include "sdl_error.hh"
+
 using namespace sdl;
 
 bool SDL::initialized = false;
@@ -16,7 +18,7 @@ void getDisplayBounds(int displayIndex, SDL_Rect* r) {
     if (SDL_GetDisplayBounds(displayIndex, r) != 0) {
         std::stringstream errorMsg;
         errorMsg << "Unable to get display bounds: " << SDL_GetError();
-        throw std::runtime_error(errorMsg.str());
+        throw SDLError(errorMsg.str());
     }
 }
 }  // namespace
@@ -74,7 +76,7 @@ void SDL::shutdown() {
 
 int SDL::displayWidth() {
     if (!initialized) {
-        throw std::runtime_error("SDL not initialized");
+        throw SDLError("SDL not initialized");
     }
 
     SDL_Rect r;
@@ -84,7 +86,7 @@ int SDL::displayWidth() {
 
 int SDL::displayHeight() {
     if (!initialized) {
-        throw std::runtime_error("SDL not initialized");
+        throw SDLError("SDL not initialized");
     }
 
     SDL_Rect r;

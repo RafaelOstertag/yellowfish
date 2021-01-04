@@ -6,6 +6,7 @@
 namespace sdl {
 class Renderable {
    public:
+    virtual ~Renderable() = default;
     virtual void render(const Renderer& renderer) = 0;
 };
 }  // namespace sdl

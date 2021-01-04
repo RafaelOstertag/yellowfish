@@ -5,28 +5,28 @@
 #include "../sdl/renderable.hh"
 
 namespace screens {
-class Image : public sdl::Renderable {
+class Image final : public sdl::Renderable {
    public:
-    Image();
-    Image(const sdl::MemoryRWOps& memory);
+    Image() = default;
+    explicit Image(const sdl::MemoryRWOps& memory);
 
-    virtual ~Image();
+    ~Image() override;
 
     Image(const Image&) = delete;
     Image& operator=(const Image&) = delete;
 
-    Image(Image&& o);
-    Image& operator=(Image&& o);
+    Image(Image&& o) noexcept;
+    Image& operator=(Image&& o) noexcept;
 
-    virtual void render(const sdl::Renderer& renderer);
+    void render(const sdl::Renderer& renderer) override;
 
     constexpr bool isEmpty() const {
         return surface == nullptr && texture == nullptr;
     }
 
    private:
-    SDL_Surface* surface;
-    SDL_Texture* texture;
+    SDL_Surface* surface{nullptr};
+    SDL_Texture* texture{nullptr};
 
     void cleanup();
 };

@@ -9,13 +9,12 @@
 namespace utils {
 class ImageResizer {
    public:
-    ImageResizer(const std::string& imagePath);
-    ImageResizer(const Magick::Blob& blob);
-    ~ImageResizer();
+    explicit ImageResizer(const std::string& imagePath);
+    explicit ImageResizer(const Magick::Blob& blob);
 
     /// Resize to a square
-    std::shared_ptr<Magick::Blob> resizeToMatch(size_t s);
-    std::shared_ptr<Magick::Blob> resizeToMatch(size_t x, size_t y);
+    std::shared_ptr<Magick::Blob> resizeToMatch(size_t s) const;
+    std::shared_ptr<Magick::Blob> resizeToMatch(size_t x, size_t y) const;
 
    private:
     std::shared_ptr<Magick::Image> image;

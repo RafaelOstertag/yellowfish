@@ -4,7 +4,7 @@
 #include <SDL.h>
 
 namespace sdl {
-class Color {
+class Color final {
    public:
     Color(unsigned char red = 0, unsigned char green = 0,
           unsigned char blue = 0, unsigned char alpha = 0xff)
@@ -15,8 +15,8 @@ class Color {
     constexpr unsigned char blue() const { return sdlColor.b; }
     constexpr unsigned char alpha() const { return sdlColor.a; }
 
-    constexpr operator const SDL_Color*() const { return &sdlColor; }
-    constexpr operator SDL_Color() const { return sdlColor; }
+    explicit constexpr operator const SDL_Color*() const { return &sdlColor; }
+    explicit constexpr operator SDL_Color() const { return sdlColor; }
 
    private:
     SDL_Color sdlColor;

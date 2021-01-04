@@ -5,6 +5,7 @@
 #include <sstream>
 
 #include "../utils/imageresizer.hh"
+#include "../utils/retriever_error.hh"
 
 #ifndef NDEBUG
 #include <iostream>
@@ -14,11 +15,11 @@ using namespace imageretriever;
 
 namespace {
 
-const char* baseUrl{"https://api.nasa.gov/planetary/apod?api_key="};
+constexpr const char* baseUrl{"https://api.nasa.gov/planetary/apod?api_key="};
 
 std::stringstream toStringStream(const net::Data& data) {
     std::stringstream stringStream;
-    auto dataSize{data.getLength()};
+    auto dataSize{data.get_length()};
     for (size_t i = 0; i < dataSize; i++) {
         stringStream << (data.get() + i);
     }
@@ -27,11 +28,11 @@ std::stringstream toStringStream(const net::Data& data) {
 }  // namespace
 
 NasaPod::NasaPod(int width, int height, const std::string& apiKey)
-    : HttpImageRetriever{width, height}, sdlMemory{}, lastRetrieved{} {
+    : HttpImageRetriever{width, height} {
     std::stringstream url;
     url << baseUrl << apiKey;
 
-    http = std::make_unique<net::Http>(url.str());
+    set_url(url.str());
 }
 
 screens::Image NasaPod::retrieve() {
@@ -40,11 +41,12 @@ screens::Image NasaPod::retrieve() {
     return screens::Image{*sdlMemory};
 }
 
-std::string NasaPod::getPictureOfTheDayUrl() {
+std::string NasaPod::getPictureOfTheDayUrl() const {
 #ifndef NDEBUG
     std::cerr << "Retrieve URL of NASA Picture of the Day\n";
 #endif
-    auto rawMetaData = http->get();
+    auto rawMetaData = get_image();
+
     std::stringstream stringstream{toStringStream(rawMetaData)};
 
     Json::CharReaderBuilder builder;
@@ -56,13 +58,13 @@ std::string NasaPod::getPictureOfTheDayUrl() {
     auto noError =
         Json::parseFromStream(builder, stringstream, &jsonRoot, &errors);
     if (!noError) {
-        throw std::runtime_error(
+        throw utils::RetrieverError(
             "Error retrieving NASA Picture of the Day meta data");
     }
 
-    auto urlValue = jsonRoot["url"];
+    const Json::Value& urlValue = jsonRoot["url"];
     if (urlValue.isNull()) {
-        throw std::runtime_error("No 'url' attribute in JSON");
+        throw utils::RetrieverError("No 'url' attribute in JSON");
     }
     return urlValue.asString();
 }
@@ -81,14 +83,7 @@ void NasaPod::fetchFromNasa() {
         net::Http picRetriever{picUrl};
         auto pictureOfTheDay = picRetriever.get();
 
-        Magick::Blob imageBlob{pictureOfTheDay, pictureOfTheDay.getLength()};
-        utils::ImageResizer imageResizer(imageBlob);
-        auto resizedImage = imageResizer.resizeToMatch(
-            HttpImageRetriever::width(), HttpImageRetriever::height());
-
-        sdlMemory = std::make_unique<sdl::MemoryRWOps>(resizedImage->data(),
-                                                       resizedImage->length());
-
+        sdlMemory = data_to_memory_rw_ops(pictureOfTheDay);
         lastRetrieved = now;
     }
 #ifndef NDEBUG
@@ -96,4 +91,19 @@ void NasaPod::fetchFromNasa() {
         std::cerr << "Use cached image\n";
     }
 #endif
+}
+
+std::unique_ptr<sdl::MemoryRWOps> NasaPod::data_to_memory_rw_ops(
+    const net::Data& picture_data) const {
+    try {
+        Magick::Blob imageBlob{picture_data.get(), picture_data.get_length()};
+        utils::ImageResizer imageResizer(imageBlob);
+        auto resizedImage = imageResizer.resizeToMatch(
+            HttpImageRetriever::width(), HttpImageRetriever::height());
+
+        return std::make_unique<sdl::MemoryRWOps>(resizedImage->data(),
+                                                  resizedImage->length());
+    } catch (const std::exception& e) {
+        throw utils::RetrieverError(e.what());
+    }
 }

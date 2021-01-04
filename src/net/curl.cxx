@@ -3,7 +3,6 @@
 #include <cstdlib>
 #include <cstring>
 #include <sstream>
-#include <stdexcept>
 
 #ifndef NDEBUG
 #include <iostream>
@@ -28,108 +27,36 @@ void Curl::initialize() {
 // class Data
 //
 
-Data::Data()
-    : buffer{static_cast<uint8_t*>(std::malloc(initialSize))},
-      size{initialSize},
-      length{0} {
-    if (buffer == nullptr) {
-        throw std::runtime_error("Out of memory while initializing");
+Data::Data(size_t s) : size{s} {
+    if (size == 0) {
+        throw CurlError("Size must not be zero");
     }
 }
-
-Data::~Data() { free(); }
-
-Data::Data(const Data& o)
-    : buffer{static_cast<uint8_t*>(std::malloc(o.size))},
-      size{o.size},
-      length{o.length} {
-    if (buffer == nullptr) {
-        throw std::runtime_error("Out of memory while copying");
-    }
-
-    std::memcpy(buffer, o.buffer, length);
-}
-
-Data& Data::operator=(const Data& o) {
-    if (&o == this) {
-        return *this;
-    }
-
-    free();
-    buffer = static_cast<uint8_t*>(std::malloc(o.size));
-    if (buffer == nullptr) {
-        throw std::runtime_error("Out of memory while copy-assigning");
-    }
-    size = o.size;
-    length = o.length;
-
-    std::memcpy(buffer, o.buffer, length);
-
-    return *this;
-}
-
-Data::Data(Data&& o) : buffer{o.buffer}, size{o.size}, length{o.length} {
-    o.buffer = nullptr;
-    o.size = 0;
-    o.length = 0;
-}
-
-Data& Data::operator=(Data&& o) {
-    if (&o == this) {
-        return *this;
-    }
-
-    free();
-
-    buffer = o.buffer;
-    size = o.size;
-    length = o.length;
-
-    o.buffer = nullptr;
-    o.size = 0;
-    o.length = 0;
-
-    return *this;
-}
-
 void Data::reset() {
-    auto newBuffer = static_cast<uint8_t*>(malloc(initialSize));
-    if (newBuffer == nullptr) {
-        throw std::runtime_error("Out of memory");
-    }
-
-    free();
-
-    buffer = newBuffer;
+    buffer = std::make_unique<uint8_t[]>(initialSize);
     length = 0;
     size = initialSize;
 }
 
-void Data::append(uint8_t* src, size_t sz) {
+void Data::append(const uint8_t* src, size_t sz) {
     auto newLength = length + sz;
-    if (newLength > size) grow();
+    while (newLength > size) grow();
 
-    std::memcpy(buffer + length, src, sz);
+    std::memcpy(buffer.get() + length, src, sz);
     length = newLength;
 }
 
 void Data::grow() {
     size *= 2;
 
-    buffer = static_cast<uint8_t*>(std::realloc(buffer, size));
-    if (buffer == nullptr) {
-        throw std::runtime_error("Out of memory while growing");
-    }
+    auto new_buffer = std::make_unique<uint8_t[]>(size);
+    std::memcpy(new_buffer.get(), buffer.get(), length);
+
+    buffer.swap(new_buffer);
+
 #ifndef NDEBUG
     std::cerr << "Grow buffer from " << size / 2 << " to " << size << '\n';
 #endif
-}
-
-void Data::free() {
-    if (buffer != nullptr) {
-        std::free(buffer);
-        buffer = nullptr;
-    }
 }
 
 //
@@ -138,60 +65,68 @@ void Data::free() {
 
 namespace {
 int curl_writer(char* data, size_t size, size_t nmemb, Data* buffer) {
-    if (buffer == NULL || nmemb == 0) return 0;
+    if (buffer == nullptr || nmemb == 0) return 0;
 
     buffer->append(reinterpret_cast<uint8_t*>(data), size * nmemb);
 
-    return size * nmemb;
+    return static_cast<int>(size * nmemb);
 }
 }  // namespace
 
 Http::Http(const std::string& url, long connectTimeout, long timeout)
-    : url{url}, connection{nullptr} {
+    : url{url} {
     Curl::initialize();
     connection = curl_easy_init();
     if (connection == nullptr) {
-        throw std::runtime_error("Unable to initialize cURL");
+        throw CurlError("Unable to initialize cURL");
     }
 
-    auto code = curl_easy_setopt(connection, CURLOPT_ERRORBUFFER, errorBuffer);
+    auto code = curl_easy_setopt(connection, CURLOPT_SSLVERSION,
+                                 CURL_SSLVERSION_TLSv1_2);
     if (code != CURLE_OK) {
-        throw std::runtime_error("Failed to set error buffer");
+        std::stringstream msg;
+        msg << "Failed to set TLS version: " << errorBuffer;
+        throw CurlError(msg.str());
+    }
+
+    code = curl_easy_setopt(connection, CURLOPT_ERRORBUFFER, errorBuffer);
+    if (code != CURLE_OK) {
+        throw CurlError("Failed to set error buffer");
     }
 
     code = curl_easy_setopt(connection, CURLOPT_URL, url.c_str());
     if (code != CURLE_OK) {
         std::stringstream msg;
         msg << "Failed to set URL: " << errorBuffer;
-        throw std::runtime_error(msg.str());
+        throw CurlError(msg.str());
     }
 
     code = curl_easy_setopt(connection, CURLOPT_FOLLOWLOCATION, 1L);
     if (code != CURLE_OK) {
         std::stringstream msg;
         msg << "Failed to set redirect option: " << errorBuffer;
-        throw std::runtime_error(msg.str());
+        throw CurlError(msg.str());
     }
 
     code = curl_easy_setopt(connection, CURLOPT_WRITEFUNCTION, curl_writer);
     if (code != CURLE_OK) {
         std::stringstream msg;
         msg << "Failed to set writer: " << errorBuffer;
-        throw std::runtime_error(msg.str());
+        throw CurlError(msg.str());
     }
 
     code = curl_easy_setopt(connection, CURLOPT_CONNECTTIMEOUT, connectTimeout);
     if (code != CURLE_OK) {
         std::stringstream msg;
         msg << "Failed to set connect timeout: " << errorBuffer;
-        throw std::runtime_error(msg.str());
+        throw CurlError(msg.str());
     }
 
     code = curl_easy_setopt(connection, CURLOPT_TIMEOUT, timeout);
     if (code != CURLE_OK) {
         std::stringstream msg;
         msg << "Failed to set timeout: " << errorBuffer;
-        throw std::runtime_error(msg.str());
+        throw CurlError(msg.str());
     }
 }
 
@@ -218,11 +153,12 @@ Http& Http::operator=(const Http& o) {
     return *this;
 }
 
-Http::Http(Http&& o) : url{o.url}, connection{o.connection} {
+Http::Http(Http&& o) noexcept
+    : url{std::move(o.url)}, connection{o.connection} {
     o.connection = nullptr;
 }
 
-Http& Http::operator=(Http&& o) {
+Http& Http::operator=(Http&& o) noexcept {
     if (&o == this) {
         return *this;
     }
@@ -242,14 +178,14 @@ Data Http::get(std::string& contentType) {
     if (code != CURLE_OK) {
         std::stringstream msg;
         msg << "Failed to set write data: " << errorBuffer;
-        throw std::runtime_error(msg.str());
+        throw CurlError(msg.str());
     }
 
     code = curl_easy_perform(connection);
     if (code != CURLE_OK) {
         std::stringstream msg;
         msg << "Failed get '" << url << "': " << errorBuffer;
-        throw std::runtime_error(msg.str());
+        throw CurlError(msg.str());
     }
 
     contentType = getLastTransferContentType();
@@ -268,7 +204,7 @@ std::string Http::getLastTransferContentType() const {
     if (res != CURLE_OK) {
         std::stringstream msg;
         msg << "Error getting content type: " << errorBuffer;
-        throw std::runtime_error(msg.str());
+        throw CurlError(msg.str());
     }
 
     if (ct == nullptr) {

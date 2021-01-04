@@ -19,7 +19,7 @@ struct Config {
     bool fullScreen;
 };
 
-extern void configure(int argc, char** argv, Config& config);
+void configure(int argc, char** argv, Config& config);
 
 }  // namespace config
 
