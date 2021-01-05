@@ -60,7 +60,11 @@
         "future": "cpp",
         "ranges": "cpp",
         "compare": "cpp",
-        "concepts": "cpp"
+        "concepts": "cpp",
+        "mutex": "cpp",
+        "stop_token": "cpp",
+        "thread": "cpp",
+        "condition_variable": "cpp"
     },
     "C_Cpp.default.intelliSenseMode": "clang-x64",
     "C_Cpp.default.includePath": [

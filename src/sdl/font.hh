@@ -8,17 +8,11 @@
 
 namespace sdl {
 
-class Font {
+class Font final {
    public:
     Font(const std::string& filepath, int size);
-    ~Font();
-    Font(const Font& o);
-    Font& operator=(const Font& o);
 
-    Font(Font&& other);
-    Font& operator=(Font&& other);
-
-    operator TTF_Font*() const { return ttfFont.get(); }
+    TTF_Font* get() const { return ttfFont.get(); }
 
    private:
     std::shared_ptr<TTF_Font> ttfFont;

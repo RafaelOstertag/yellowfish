@@ -7,21 +7,17 @@
 #include "../weatherretriever/weather.hh"
 
 namespace screens {
-class Weather : public sdl::Renderable {
+class Weather final : public sdl::Renderable {
    public:
     Weather(const std::string& fontpath, int size, const sdl::Color& fontColor);
-    virtual ~Weather() = default;
 
-    virtual void render(const sdl::Renderer& renderer);
+    void render(const sdl::Renderer& renderer) override;
 
    private:
-    weatherretriever::Weather weatherRetriever;
+    weatherretriever::Weather weatherRetriever{};
     sdl::FontPtr font;
     sdl::Color color;
     sdl::Color background;
-
-    SDL_Texture* textToTexture(const std::string& text,
-                               const sdl::Renderer& renderer);
 };
 }  // namespace screens
 

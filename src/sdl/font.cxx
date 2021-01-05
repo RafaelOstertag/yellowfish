@@ -2,7 +2,7 @@
 
 #include <SDL.h>
 
-#include <stdexcept>
+#include "sdl_error.hh"
 
 using namespace sdl;
 
@@ -10,29 +10,6 @@ Font::Font(const std::string& filepath, int size)
     : ttfFont{TTF_OpenFont(filepath.c_str(), size), TTF_CloseFont} {
     if (ttfFont == nullptr) {
         std::string errmsg{"Cannot load font: "};
-        throw std::invalid_argument(errmsg + SDL_GetError());
+        throw SDLError(errmsg + SDL_GetError());
     }
-}
-
-Font::~Font() = default;
-
-Font::Font(const Font& o) { ttfFont = o.ttfFont; }
-
-Font& Font::operator=(const Font& o) {
-    if (this == &o) {
-        return *this;
-    }
-
-    ttfFont = o.ttfFont;
-
-    return *this;
-}
-
-Font::Font(Font&& o) : ttfFont{std::move(o.ttfFont)} {}
-
-Font& Font::operator=(Font&& o) {
-    ttfFont = std::move(o.ttfFont);
-    o.ttfFont = nullptr;
-
-    return *this;
 }

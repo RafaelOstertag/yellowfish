@@ -7,7 +7,7 @@
 namespace utils {
 class DirectoryLister {
    public:
-    DirectoryLister(const std::string& path);
+    explicit DirectoryLister(const std::string& path);
     std::vector<std::string> list() const;
 
     std::string getPath() const { return path; }

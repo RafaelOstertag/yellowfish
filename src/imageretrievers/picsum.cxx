@@ -5,7 +5,7 @@
 using namespace imageretriever;
 
 namespace {
-const char* baseUrl{"https://picsum.photos/"};
+constexpr const char* baseUrl{"https://picsum.photos/"};
 }  // namespace
 
 Picsum::Picsum(int width, int height) : HttpImageRetriever{width, height} {
@@ -19,5 +19,5 @@ Picsum::Picsum(int width, int height) : HttpImageRetriever{width, height} {
                   << HttpImageRetriever::height();
     }
 
-    http = std::make_unique<net::Http>(picsumUrl.str());
+    set_url(picsumUrl.str());
 }

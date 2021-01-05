@@ -4,10 +4,9 @@
 #include "httpimageretriever.hh"
 
 namespace imageretriever {
-class ImageServer : public HttpImageRetriever {
+class ImageServer final : public HttpImageRetriever {
    public:
     ImageServer(int width, int height);
-    virtual ~ImageServer() = default;
 };
 }  // namespace imageretriever
 

@@ -12,7 +12,7 @@ using namespace utils;
 namespace {
 class DirectoryHandle {
    public:
-    DirectoryHandle(const char* path) : dir{nullptr} {
+    explicit DirectoryHandle(const char* path) {
         dir = opendir(path);
         if (dir == nullptr) {
             throw std::invalid_argument(std::strerror(errno));
@@ -30,10 +30,10 @@ class DirectoryHandle {
         }
     }
 
-    DIR* operator*() { return dir; }
+    DIR* get() { return dir; }
 
    private:
-    DIR* dir;
+    DIR* dir{nullptr};
 };
 }  // namespace
 
@@ -43,8 +43,9 @@ std::vector<std::string> DirectoryLister::list() const {
     DirectoryHandle directoryHandle(path.c_str());
 
     std::vector<std::string> list;
-    struct dirent* dent = nullptr;
-    while ((dent = readdir(*directoryHandle)) != nullptr) {
+
+    for (dirent* dent = readdir(directoryHandle.get()); dent != nullptr;
+         dent = readdir(directoryHandle.get())) {
         if ((dent->d_type & DT_REG) != DT_REG) {
             continue;
         }

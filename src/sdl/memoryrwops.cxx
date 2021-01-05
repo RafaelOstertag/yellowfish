@@ -3,34 +3,33 @@
 #include <cstdlib>
 #include <sstream>
 
+#include "sdl_error.hh"
+
 using namespace sdl;
 
 MemoryRWOps::MemoryRWOps(const void* ptr, size_t size)
-    : buffer{nullptr}, memRWOps{nullptr} {
-    buffer = new uint8_t[size];
-    memcpy(buffer, ptr, size);
+    : buffer{std::make_unique<uint8_t[]>(size)} {
+    memcpy(buffer.get(), ptr, size);
 
-    memRWOps = SDL_RWFromConstMem(buffer, size);
+    memRWOps = SDL_RWFromConstMem(buffer.get(), static_cast<int>(size));
     if (memRWOps == nullptr) {
         std::ostringstream errorMessage;
         errorMessage << "Cannot create RWOps from memory: " << SDL_GetError();
-        throw std::runtime_error(errorMessage.str());
+        throw SDLError(errorMessage.str());
     }
 }
 
 MemoryRWOps::~MemoryRWOps() { destroyRWOps(); }
 
-MemoryRWOps::MemoryRWOps(MemoryRWOps&& o)
-    : buffer{o.buffer}, memRWOps{o.memRWOps} {
-    o.buffer = nullptr;
+MemoryRWOps::MemoryRWOps(MemoryRWOps&& o) noexcept
+    : buffer{std::move(o.buffer)}, memRWOps{o.memRWOps} {
     o.memRWOps = nullptr;
 }
 
-MemoryRWOps& MemoryRWOps::operator=(MemoryRWOps&& o) {
+MemoryRWOps& MemoryRWOps::operator=(MemoryRWOps&& o) noexcept {
     destroyRWOps();
 
-    buffer = o.buffer;
-    o.buffer = nullptr;
+    buffer = std::move(o.buffer);
 
     memRWOps = o.memRWOps;
     o.memRWOps = nullptr;
@@ -39,11 +38,6 @@ MemoryRWOps& MemoryRWOps::operator=(MemoryRWOps&& o) {
 }
 
 void MemoryRWOps::destroyRWOps() {
-    if (buffer != nullptr) {
-        delete[] buffer;
-        buffer = nullptr;
-    }
-
     if (memRWOps != nullptr) {
         SDL_FreeRW(memRWOps);
         memRWOps = nullptr;

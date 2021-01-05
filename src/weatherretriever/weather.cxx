@@ -16,9 +16,8 @@ std::vector<std::string> parseCsvLine(const std::string& line,
     fields.reserve(24);
 
     std::string::size_type lastPos = 0;
-    std::string::size_type pos;
-    for (pos = line.find(separator); pos != std::string::npos;
-         pos = line.find(separator, pos + 1)) {
+    for (std::string::size_type pos = line.find(separator);
+         pos != std::string::npos; pos = line.find(separator, pos + 1)) {
         fields.push_back(line.substr(lastPos, pos - lastPos));
         lastPos = pos + 1;
     }
@@ -30,10 +29,6 @@ std::vector<std::string> parseCsvLine(const std::string& line,
     return fields;
 }
 }  // namespace
-
-Weather::Weather() : http {
-        "https://data.geo.admin.ch/ch.meteoschweiz.messwerte-aktuell/VQHA80.csv"
-    }, timeKeeper{900}, currentInformation{"-"}, firstRun{true} {}
 
 std::string Weather::getTemperature() {
     if (firstRun || timeKeeper.hasElapsed()) {
@@ -52,7 +47,7 @@ void Weather::fetchInformation() {
     net::Data data;
     try {
         data = http.get();
-    } catch (std::runtime_error& e) {
+    } catch (const net::CurlError& e) {
         std::cerr << "Error retrieving weather information: " << e.what()
                   << "\n";
         return;
@@ -63,7 +58,7 @@ void Weather::fetchInformation() {
 
 void Weather::extractInformationFromData(const net::Data& data) {
     std::stringstream ss;
-    ss.write(reinterpret_cast<const char*>(data.get()), data.getLength());
+    ss.write(reinterpret_cast<const char*>(data.get()), data.get_length());
 
     std::string line;
     std::getline(ss, line);

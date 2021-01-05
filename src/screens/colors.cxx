@@ -3,12 +3,12 @@
 using namespace screens;
 
 Colors::Colors(Sint32 x, Sint32 y, Sint32 width, Sint32 height)
-    : rect{x, y, width, height}, redUp{true}, greenUp{true}, blueUp{true} {}
+    : rect{x, y, width, height} {}
 
 void Colors::render(const sdl::Renderer& renderer) {
-    SDL_SetRenderDrawColor(renderer, color.red(), color.green(), color.blue(),
-                           color.alpha());
-    SDL_RenderFillRect(renderer, &rect);
+    SDL_SetRenderDrawColor(renderer.get(), color.red(), color.green(),
+                           color.blue(), color.alpha());
+    SDL_RenderFillRect(renderer.get(), &rect);
     setNextColor();
 }
 
@@ -42,6 +42,9 @@ Uint8 Colors::nextRed(Uint8 red) {
         case 0xff:
             redUp = false;
             break;
+        default:
+            // Do nothing
+            break;
     }
     return red;
 }
@@ -60,6 +63,9 @@ Uint8 Colors::nextGreen(Uint8 green) {
         case 0xff:
             greenUp = false;
             break;
+        default:
+            // Do nothing
+            break;
     }
     return green;
 }
@@ -77,6 +83,9 @@ Uint8 Colors::nextBlue(Uint8 blue) {
             break;
         case 0xff:
             blueUp = false;
+            break;
+        default:
+            // Do nothing
             break;
     }
     return blue;

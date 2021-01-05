@@ -7,10 +7,9 @@
 #include "httpimageretriever.hh"
 
 namespace imageretriever {
-class Unsplash : public HttpImageRetriever {
+class Unsplash final : public HttpImageRetriever {
    public:
     Unsplash(int width, int height);
-    virtual ~Unsplash() = default;
 };
 }  // namespace imageretriever
 

@@ -6,7 +6,7 @@
 namespace utils {
 class TimeKeeper {
    public:
-    TimeKeeper(int seconds);
+    explicit TimeKeeper(int seconds);
 
     bool hasElapsed();
 

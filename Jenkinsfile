@@ -6,27 +6,50 @@ pipeline {
     options {
         disableConcurrentBuilds()
         ansiColor('xterm')
-        buildDiscarder logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '10')
+        buildDiscarder logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '15')
         timestamps()
     }
 
     triggers {
+        pollSCM '@hourly'
         cron '@daily'
     }
 
     stages {
-        stage('Configure') {
-            steps {
-                dir('build') {
-                    sh 'rm -rf *'
-                    sh 'cmake -DCMAKE_BUILD_TYPE=Release ..'
-                }
+        stage('Sonar Analysis') {
+            agent {
+                label 'amd64&&sonar-buildwrapper'
             }
-        }
-        stage('Build') {
-            steps {
-                dir('build') {
-                    sh 'cmake --build .'
+
+            stages {
+                stage('Configure') {
+                    steps {
+                        dir('build') {
+                            sh 'cmake -DCMAKE_BUILD_TYPE=Release ..'
+                        }
+                    }
+                }
+                stage('Build') {
+                    steps {
+                        dir('build') {
+                            sh '/opt/build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir sonar-out cmake --build .'
+                        }
+                    }
+                }
+                stage('Checks') {
+                    steps {
+                        dir('build') {
+                            sh 'ctest'
+                        }
+                    }
+                }
+
+                stage('Analyze') {
+                    steps {
+                        script {
+                            sonar_scanner()
+                        }
+                    }
                 }
             }
         }
@@ -63,5 +86,12 @@ pipeline {
             subject:"${JOB_NAME} (${BRANCH_NAME};${env.BUILD_DISPLAY_NAME}) -- ${currentBuild.currentResult}",
             body:"Refer to ${currentBuild.absoluteUrl}"
         }
+    }
+}
+
+def sonar_scanner() {
+    def scannerHome = tool 'Latest SonarQube Scanner';
+    withSonarQubeEnv(installationName: 'Sonarcloud', credentialsId: 'e8795d01-550a-4c05-a4be-41b48b22403f') {
+        sh label: 'sonarcloud', script: "${scannerHome}/bin/sonar-scanner -Dsonar.branch.name=${env.BRANCH_NAME}"
     }
 }

@@ -7,17 +7,16 @@
 namespace screens {
 class Fill : public sdl::Renderable {
    public:
-    Fill(const sdl::Color& fillColor) : fillColor{fillColor} {}
-    virtual ~Fill() = default;
+    explicit Fill(const sdl::Color& fillColor) : fillColor{fillColor} {}
 
-    virtual void render(const sdl::Renderer& renderer) {
-        SDL_SetRenderDrawColor(renderer, fillColor.red(), fillColor.green(),
+    void render(const sdl::Renderer& renderer) override {
+        SDL_SetRenderDrawColor(renderer.get(), fillColor.red(), fillColor.green(),
                                fillColor.blue(), fillColor.alpha());
 
-        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+        SDL_SetRenderDrawBlendMode(renderer.get(), SDL_BLENDMODE_BLEND);
 
-        SDL_RenderFillRect(renderer, NULL);
-        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
+        SDL_RenderFillRect(renderer.get(), nullptr);
+        SDL_SetRenderDrawBlendMode(renderer.get(), SDL_BLENDMODE_NONE);
     }
 
    protected:

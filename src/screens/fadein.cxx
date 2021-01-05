@@ -3,10 +3,14 @@
 using namespace screens;
 
 namespace {
-class NoOpFadeInCallback : public FadeInCallback {
+class NoOpFadeInCallback final : public FadeInCallback {
    public:
-    virtual void fadingIn() {}
-    virtual void done() {}
+    void fadingIn() override {
+        // It's no-op
+    }
+    void done() override {
+        // It's no-op
+    }
 };
 NoOpFadeInCallback NO_OP_FADEIN_CALLBACK{};
 }  // namespace

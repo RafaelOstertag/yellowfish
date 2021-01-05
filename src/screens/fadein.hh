@@ -12,15 +12,13 @@ class FadeInCallback {
     virtual void done() = 0;
 };
 
-class FadeIn : public Fill {
+class FadeIn final : public Fill {
    public:
     FadeIn(const sdl::Color& fillColor, unsigned char fadeInStep = 10);
     FadeIn(const sdl::Color& fillColor, FadeInCallback& fadeInCallback,
            unsigned char fadeInStep = 10);
 
-    virtual ~FadeIn() = default;
-
-    virtual void render(const sdl::Renderer& renderer);
+    void render(const sdl::Renderer& renderer) override;
 
     void reset() { currentFillColor = initialOpaqueColor; }
 

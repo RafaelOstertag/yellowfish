@@ -11,7 +11,7 @@
 #include "renderer.hh"
 
 namespace sdl {
-class Window {
+class Window final {
    public:
     Window(const std::string& name, int width, int heigh, const Color& bgColor,
            bool fullscreen = false);
@@ -19,7 +19,7 @@ class Window {
     Window(const Window&) = delete;
     Window& operator=(const Window&) = delete;
 
-    Window(Window&& o);
+    Window(Window&& o) noexcept;
     Window& operator=(Window&&) = delete;
 
     void clear();
@@ -28,8 +28,8 @@ class Window {
     constexpr const Renderer& getRenderer() const { return renderer; }
 
    private:
-    SDL_Window* sdlWindow;
-    Renderer renderer;
+    SDL_Window* sdlWindow{nullptr};
+    Renderer renderer{};
     const Color& bgColor;
 };
 
