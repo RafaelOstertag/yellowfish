@@ -2,3 +2,6 @@ build/
 Testing/
 *~
 .scannerwork
+cmake-build-debug
+.vscode
+.idea
