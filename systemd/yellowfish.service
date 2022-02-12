@@ -4,6 +4,7 @@ Description=Clock with Wallpaper
 [Service]
 Environment="DISPLAY=:0.0"
 Environment="XAUTHORITY=/home/pi/.Xauthority"
+Environment="CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt"
 ExecStart=/usr/local/bin/yellowfish 15 br full
 Restart=on-failure
 RestartSec=10s

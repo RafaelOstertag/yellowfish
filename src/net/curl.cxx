@@ -128,6 +128,16 @@ Http::Http(const std::string& url, long connectTimeout, long timeout)
         msg << "Failed to set timeout: " << errorBuffer;
         throw CurlError(msg.str());
     }
+
+    auto caBundleFile = getenv("CURL_CA_BUNDLE");
+    if (caBundleFile != nullptr) {
+        code = curl_easy_setopt(connection, CURLOPT_CAINFO, caBundleFile);
+        if (code != CURLE_OK) {
+            std::stringstream msg;
+            msg << "Failed to set CA Bundle File: " << errorBuffer;
+            throw CurlError(msg.str());
+        }
+    }
 }
 
 Http::~Http() {
