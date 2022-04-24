@@ -41,7 +41,6 @@ jobs:
       - run:
           name: Trigger rundeck
           command: |
-            VERSION=$(python3 setup.py --version)
             curl -f -H "X-Rundeck-Auth-Token: ${RUNDECK_API_TOKEN}" \
               -H 'Content-Type: application/json' \
               -d "{ \"options\" : { \"commit\": \"${CIRCLE_SHA1}\" }}" \
