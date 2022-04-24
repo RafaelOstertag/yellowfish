@@ -1,0 +1,64 @@
+version: 2.1
+
+orbs:
+  c: rafaelostertag/common-orb@1.15.0
+
+only-master: &onlymaster
+  branches:
+    only:
+      - master
+
+jobs:
+  build:
+    executor: c/cpp-build-amd64-internal
+    steps:
+      - checkout
+      - run:
+          name: Setup
+          command: mkdir -p build
+      - run:
+          name: Configure
+          command: |
+            cd build
+            cmake -DCMAKE_BUILD_TYPE=Release ..
+      - run:
+          name: Build
+          command: |
+            cd build
+            /opt/build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir sonar-out cmake --build .
+      - run:
+          name: Tests
+          command: |
+            cd build
+            ctest
+      - run:
+          name: Sonar
+          command: /opt/sonar-scanner/bin/sonar-scanner -Dsonar.branch.name=${CIRCLE_BRANCH}
+  trigger-rundeck:
+    executor: c/internal-infra
+    steps:
+      - checkout
+      - run:
+          name: Trigger rundeck
+          command: |
+            VERSION=$(python3 setup.py --version)
+            curl -f -H "X-Rundeck-Auth-Token: ${RUNDECK_API_TOKEN}" \
+              -H 'Content-Type: application/json' \
+              -d "{ \"options\" : { \"commit\": \"${CIRCLE_SHA1}\" }}" \
+              -X POST https://colossus.kruemel.home/rundeck/api/18/job/d7101892-0a31-4716-99a1-de3e60570136/executions
+
+
+workflows:
+  build-and-deploy:
+    jobs:
+      - build:
+          name: build
+          context:
+            - repository-read
+            - sonar
+      - trigger-rundeck:
+          filters: *onlymaster
+          context:
+            - rundeck
+          requires:
+            - build
