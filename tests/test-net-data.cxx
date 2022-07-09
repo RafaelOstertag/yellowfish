@@ -48,7 +48,7 @@ class NetDataTest final : public CppUnit::TestFixture {
             CPPUNIT_ASSERT_EQUAL(i, subject->get()[i]);
         }
 
-        delete values;
+        delete[] values;
     }
 
    private:
