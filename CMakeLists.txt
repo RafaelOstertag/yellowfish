@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 enable_testing()
 
-project(YellowFish VERSION 1.0.3)
+project(YellowFish VERSION 1.0.4)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
