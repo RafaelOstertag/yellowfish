@@ -1,28 +1,27 @@
-set(sources 
-            config.cxx
-            imageretrievers/httpimageretriever.cxx
-            imageretrievers/imageserver.cxx
-            imageretrievers/localfile.cxx
-            imageretrievers/nasapod.cxx
-            imageretrievers/picsum.cxx
-            imageretrievers/unsplash.cxx
-            net/curl.cxx
-            screens/clock.cxx
-            screens/colors.cxx
-            screens/fadein.cxx
-            screens/image.cxx
-            screens/weather.cxx
-            sdl/font.cxx
-            sdl/memoryrwops.cxx
-            sdl/renderer.cxx 
-            sdl/sdl.cxx 
-            sdl/window.cxx
-            utils/dirlist.cxx
-            utils/imageresizer.cxx
-            utils/textrenderer.cxx
-            utils/timekeeper.cxx
-            weatherretriever/weather.cxx
-            yellowfish.cxx
+set(sources
+        config.cxx
+        imageretrievers/httpimageretriever.cxx
+        imageretrievers/imageserver.cxx
+        imageretrievers/localfile.cxx
+        imageretrievers/nasapod.cxx
+        imageretrievers/picsum.cxx
+        net/curl.cxx
+        screens/clock.cxx
+        screens/colors.cxx
+        screens/fadein.cxx
+        screens/image.cxx
+        screens/weather.cxx
+        sdl/font.cxx
+        sdl/memoryrwops.cxx
+        sdl/renderer.cxx
+        sdl/sdl.cxx
+        sdl/window.cxx
+        utils/dirlist.cxx
+        utils/imageresizer.cxx
+        utils/textrenderer.cxx
+        utils/timekeeper.cxx
+        weatherretriever/weather.cxx
+        yellowfish.cxx
 )
 
 add_executable(yellowfish ${sources})

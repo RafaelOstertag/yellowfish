@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 enable_testing()
 
-project(YellowFish VERSION 1.0.4)
+project(YellowFish VERSION 1.1.0)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
@@ -14,7 +14,7 @@ pkg_check_modules(SDL2 REQUIRED sdl2 SDL2_ttf SDL2_image)
 pkg_check_modules(CURL REQUIRED libcurl)
 pkg_check_modules(JSON REQUIRED jsoncpp)
 pkg_check_modules(CPPUNIT REQUIRED cppunit)
-pkg_search_module(MAGICKPP REQUIRED Magick++ GraphicsMagick++)
+pkg_search_module(MAGICKPP REQUIRED GraphicsMagick++)
 
 add_subdirectory(src)
 add_subdirectory(tests)

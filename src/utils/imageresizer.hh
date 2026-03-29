@@ -7,18 +7,20 @@
 #include <string>
 
 namespace utils {
-class ImageResizer {
-   public:
-    explicit ImageResizer(const std::string& imagePath);
-    explicit ImageResizer(const Magick::Blob& blob);
+    class ImageResizer {
+    public:
+        explicit ImageResizer(const std::string &imagePath);
 
-    /// Resize to a square
-    std::shared_ptr<Magick::Blob> resizeToMatch(size_t s) const;
-    std::shared_ptr<Magick::Blob> resizeToMatch(size_t x, size_t y) const;
+        explicit ImageResizer(const Magick::Blob &blob);
 
-   private:
-    std::shared_ptr<Magick::Image> image;
-};
-}  // namespace utils
+        /// Resize to a square
+        std::shared_ptr<Magick::Blob> resizeToMatch(unsigned int s) const;
+
+        std::shared_ptr<Magick::Blob> resizeToMatch(unsigned int x, unsigned int y) const;
+
+    private:
+        std::shared_ptr<Magick::Image> image;
+    };
+} // namespace utils
 
 #endif

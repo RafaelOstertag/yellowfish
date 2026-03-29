@@ -4,18 +4,20 @@
 
 using namespace utils;
 
-ImageResizer::ImageResizer(const std::string& imagePath)
-    : image{std::make_unique<Magick::Image>(imagePath)} {}
+ImageResizer::ImageResizer(const std::string &imagePath)
+    : image{std::make_unique<Magick::Image>(imagePath)} {
+}
 
-ImageResizer::ImageResizer(const Magick::Blob& blob)
-    : image{std::make_unique<Magick::Image>(blob)} {}
+ImageResizer::ImageResizer(const Magick::Blob &blob)
+    : image{std::make_unique<Magick::Image>(blob)} {
+}
 
-std::shared_ptr<Magick::Blob> ImageResizer::resizeToMatch(size_t s) const {
+std::shared_ptr<Magick::Blob> ImageResizer::resizeToMatch(unsigned int s) const {
     return resizeToMatch(s, s);
 }
 
-std::shared_ptr<Magick::Blob> ImageResizer::resizeToMatch(size_t x,
-                                                          size_t y) const {
+std::shared_ptr<Magick::Blob> ImageResizer::resizeToMatch(unsigned int x,
+                                                          unsigned int y) const {
     Magick::Image workingImage = *image;
 
     auto width = static_cast<double>(workingImage.columns());
@@ -25,20 +27,20 @@ std::shared_ptr<Magick::Blob> ImageResizer::resizeToMatch(size_t x,
         if (width > height) {
             auto scaleFactor = static_cast<double>(y) / height;
             workingImage.zoom(
-                Magick::Geometry{static_cast<size_t>(width * scaleFactor), x});
+                Magick::Geometry{static_cast<unsigned int>(width * scaleFactor), x});
         } else {
             auto scaleFactor = static_cast<double>(x) / width;
             workingImage.zoom(
-                Magick::Geometry{x, static_cast<size_t>(height * scaleFactor)});
+                Magick::Geometry{x, static_cast<unsigned int>(height * scaleFactor)});
         }
     } else if (x > y) {
         auto scaleFactor = static_cast<double>(x) / width;
         workingImage.zoom(
-            Magick::Geometry{x, static_cast<size_t>(height * scaleFactor)});
+            Magick::Geometry{x, static_cast<unsigned int>(height * scaleFactor)});
     } else {
         auto scaleFactor = static_cast<double>(y) / height;
         workingImage.zoom(
-            Magick::Geometry{static_cast<size_t>(width * scaleFactor), y});
+            Magick::Geometry{static_cast<unsigned int>(width * scaleFactor), y});
     }
     workingImage.crop(Magick::Geometry{x, y});
 
